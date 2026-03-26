@@ -15,6 +15,7 @@ import LeadsPage from "./pages/LeadsPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
+import SeedDataPage from "./pages/SeedDataPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Auth />} />
+            <Route path="/seed" element={<SeedDataPage />} />
 
             {/* Protected admin routes */}
             <Route path="/app" element={<ProtectedRoute />}>
