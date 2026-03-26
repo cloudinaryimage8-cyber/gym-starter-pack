@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { db as supabase } from '@/integrations/supabase/db';
 
 export async function seedDemoData(userId: string) {
   // 1. Plans
