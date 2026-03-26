@@ -14,8 +14,10 @@ import ExpensesPage from "./pages/ExpensesPage";
 import LeadsPage from "./pages/LeadsPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
+import BrandingSettingsPage from "./pages/BrandingSettingsPage";
 import NotFound from "./pages/NotFound";
 import SeedDataPage from "./pages/SeedDataPage";
+import { BrandingProvider } from "./components/BrandingProvider";
 
 const queryClient = new QueryClient();
 
