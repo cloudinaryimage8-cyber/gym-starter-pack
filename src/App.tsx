@@ -1,10 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/contexts/AuthContext";
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import MembersPage from "./pages/MembersPage";
+import PlansPage from "./pages/PlansPage";
+import PaymentsPage from "./pages/PaymentsPage";
+import ExpensesPage from "./pages/ExpensesPage";
+import LeadsPage from "./pages/LeadsPage";
+import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
+import PublicGymPage from "./pages/PublicGymPage";
+import PlaceholderPage from "./pages/PlaceholderPage";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -12,14 +21,23 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/members" element={<MembersPage />} />
+            <Route path="/plans" element={<PlansPage />} />
+            <Route path="/payments" element={<PaymentsPage />} />
+            <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/website" element={<WebsiteBuilderPage />} />
+            <Route path="/gym/:userId" element={<PublicGymPage />} />
+            <Route path="/settings" element={<PlaceholderPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
