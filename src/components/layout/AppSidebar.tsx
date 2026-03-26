@@ -2,11 +2,11 @@ import {
   LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
 } from '@/components/ui/sidebar';
+import { useGymSettings } from '@/hooks/useGymSettings';
 
 const navItems = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
@@ -22,15 +22,20 @@ const navItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
+  const { resolved } = useGymSettings();
 
   return (
     <Sidebar collapsible="icon">
       <div className="p-4 flex items-center gap-3">
-        <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-          <Dumbbell className="h-5 w-5 text-primary-foreground" />
-        </div>
+        {resolved.logo_url ? (
+          <img src={resolved.logo_url} alt={resolved.gym_name} className="h-9 w-9 rounded-lg object-cover shrink-0" />
+        ) : (
+          <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+            <Dumbbell className="h-5 w-5 text-primary-foreground" />
+          </div>
+        )}
         {!collapsed && (
-          <span className="text-lg font-bold font-display text-sidebar-accent-foreground">GymOS</span>
+          <span className="text-lg font-bold font-display text-sidebar-accent-foreground">{resolved.gym_name}</span>
         )}
       </div>
       <SidebarContent>
