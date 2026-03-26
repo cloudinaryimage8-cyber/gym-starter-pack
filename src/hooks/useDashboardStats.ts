@@ -27,31 +27,31 @@ export function useDashboardStats() {
     queryFn: async () => {
       const [paymentsRes, expensesRes, membersRes, pendingRes, recentRes, leadsRes] = await Promise.all([
         supabase
-          .from('payments')
+          .from('payments' as any)
           .select('amount')
           .eq('status', 'paid')
           .gte('payment_date', monthStart)
           .lte('payment_date', monthEnd),
         supabase
-          .from('expenses')
+          .from('expenses' as any)
           .select('amount')
           .gte('expense_date', monthStart)
           .lte('expense_date', monthEnd),
         supabase
-          .from('members')
+          .from('members' as any)
           .select('expiry_date'),
         supabase
-          .from('payments')
+          .from('payments' as any)
           .select('id')
           .eq('status', 'pending'),
         supabase
-          .from('payments')
+          .from('payments' as any)
           .select('amount, payment_date, members(name)')
           .eq('status', 'paid')
           .order('payment_date', { ascending: false })
           .limit(5),
         supabase
-          .from('leads')
+          .from('leads' as any)
           .select('id')
           .eq('status', 'new'),
       ]);
@@ -63,11 +63,11 @@ export function useDashboardStats() {
       if (recentRes.error) throw recentRes.error;
       if (leadsRes.error) throw leadsRes.error;
 
-      const monthlyRevenue = (paymentsRes.data || []).reduce((sum, p) => sum + Number(p.amount), 0);
-      const totalExpenses = (expensesRes.data || []).reduce((sum, e) => sum + Number(e.amount), 0);
+      const monthlyRevenue = (paymentsRes.data || []).reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+      const totalExpenses = (expensesRes.data || []).reduce((sum: number, e: any) => sum + Number(e.amount), 0);
       const allMembers = membersRes.data || [];
-      const activeMembers = allMembers.filter(m => m.expiry_date >= today).length;
-      const expiringMemberships = allMembers.filter(m => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
+      const activeMembers = allMembers.filter((m: any) => m.expiry_date >= today).length;
+      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
 
       return {
         monthlyRevenue,
