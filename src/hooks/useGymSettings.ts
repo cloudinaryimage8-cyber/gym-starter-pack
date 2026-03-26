@@ -29,13 +29,26 @@ export function useGymSettings() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['gym_settings', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('gym_settings' as any)
-        .select('*')
-        .eq('user_id', user!.id)
-        .maybeSingle();
-      if (error) throw error;
-      return data as GymSettings | null;
+      try {
+        const { data, error } = await supabase
+          .from('gym_settings' as any)
+          .select('*')
+          .eq('user_id', user!.id)
+          .maybeSingle();
+        if (error) {
+          // Table doesn't exist yet — return null gracefully
+          if (error.code === 'PGRST205' || error.message?.includes('Could not find')) {
+            return null;
+          }
+          throw error;
+        }
+        return data as GymSettings | null;
+      } catch (e: any) {
+        if (e?.code === 'PGRST205' || e?.message?.includes('Could not find')) {
+          return null;
+        }
+        throw e;
+      }
     },
     enabled: !!user,
   });
