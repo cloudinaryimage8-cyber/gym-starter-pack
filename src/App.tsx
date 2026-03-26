@@ -15,6 +15,7 @@ import LeadsPage from "./pages/LeadsPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
+import SeedDataPage from "./pages/SeedDataPage";
 
 const queryClient = new QueryClient();
 
