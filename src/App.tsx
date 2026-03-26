@@ -14,8 +14,10 @@ import ExpensesPage from "./pages/ExpensesPage";
 import LeadsPage from "./pages/LeadsPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
+import BrandingSettingsPage from "./pages/BrandingSettingsPage";
 import NotFound from "./pages/NotFound";
 import SeedDataPage from "./pages/SeedDataPage";
+import { BrandingProvider } from "./components/BrandingProvider";
 
 const queryClient = new QueryClient();
 
@@ -33,14 +35,15 @@ const App = () => (
 
             {/* Protected admin routes */}
             <Route path="/app" element={<ProtectedRoute />}>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="members" element={<MembersPage />} />
-              <Route path="plans" element={<PlansPage />} />
-              <Route path="payments" element={<PaymentsPage />} />
-              <Route path="leads" element={<LeadsPage />} />
-              <Route path="expenses" element={<ExpensesPage />} />
-              <Route path="website" element={<WebsiteBuilderPage />} />
-              <Route path="settings" element={<PlaceholderPage />} />
+              <Route element={<BrandingProvider><PlaceholderPage /></BrandingProvider>} />
+              <Route path="dashboard" element={<BrandingProvider><Dashboard /></BrandingProvider>} />
+              <Route path="members" element={<BrandingProvider><MembersPage /></BrandingProvider>} />
+              <Route path="plans" element={<BrandingProvider><PlansPage /></BrandingProvider>} />
+              <Route path="payments" element={<BrandingProvider><PaymentsPage /></BrandingProvider>} />
+              <Route path="leads" element={<BrandingProvider><LeadsPage /></BrandingProvider>} />
+              <Route path="expenses" element={<BrandingProvider><ExpensesPage /></BrandingProvider>} />
+              <Route path="website" element={<BrandingProvider><WebsiteBuilderPage /></BrandingProvider>} />
+              <Route path="settings" element={<BrandingProvider><BrandingSettingsPage /></BrandingProvider>} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

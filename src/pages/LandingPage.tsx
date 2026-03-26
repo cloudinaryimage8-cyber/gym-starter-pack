@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { usePublicGymSettings, GymSettings } from '@/hooks/useGymSettings';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +67,20 @@ export default function LandingPage() {
     },
   });
 
+  const ownerId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+  const { data: gymBranding } = usePublicGymSettings(ownerId);
+  const brandName = gymBranding?.gym_name || 'GymOS';
+  const brandLogo = gymBranding?.logo_url;
+  const brandPrimary = gymBranding?.primary_color || '142 71% 45%';
+
+  // Apply branding colors to CSS vars for this page
+  useEffect(() => {
+    if (gymBranding?.primary_color) {
+      document.documentElement.style.setProperty('--primary', gymBranding.primary_color);
+    }
+    return () => { document.documentElement.style.removeProperty('--primary'); };
+  }, [gymBranding?.primary_color]);
+
   const hero = data?.sections.find((s: any) => s.section_type === 'hero');
 
   const scrollTo = (id: string) => {
@@ -77,8 +92,8 @@ export default function LandingPage() {
     e.preventDefault();
     if (!leadName.trim() || !leadPhone.trim()) return;
     setSubmitting(true);
-    const ownerId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
-    if (!ownerId) {
+    const ownerIdForLead = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+    if (!ownerIdForLead) {
       toast({ title: 'Error', description: 'Unable to submit. Please try again later.', variant: 'destructive' });
       setSubmitting(false);
       return;
@@ -87,7 +102,7 @@ export default function LandingPage() {
       name: leadName.trim(),
       phone: leadPhone.trim(),
       fitness_goal: leadGoal || null,
-      user_id: ownerId,
+      user_id: ownerIdForLead,
     });
     setSubmitting(false);
     if (error) {
@@ -113,10 +128,14 @@ export default function LandingPage() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[hsl(220,25%,4%)]/95 backdrop-blur-xl shadow-2xl shadow-black/20' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(142,71%,35%)] flex items-center justify-center shadow-lg shadow-primary/25">
-              <Dumbbell className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold font-display tracking-tight">GymOS</span>
+            {brandLogo ? (
+              <img src={brandLogo} alt={brandName} className="h-10 w-10 rounded-xl object-cover shadow-lg" />
+            ) : (
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(142,71%,35%)] flex items-center justify-center shadow-lg shadow-primary/25">
+                <Dumbbell className="h-5 w-5 text-primary-foreground" />
+              </div>
+            )}
+            <span className="text-xl font-bold font-display tracking-tight">{brandName}</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
             {navLinks.map(link => (
