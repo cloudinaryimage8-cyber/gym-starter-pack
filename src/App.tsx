@@ -29,6 +29,7 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Auth />} />
+            <Route path="/seed" element={<SeedDataPage />} />
 
             {/* Protected admin routes */}
             <Route path="/app" element={<ProtectedRoute />}>
