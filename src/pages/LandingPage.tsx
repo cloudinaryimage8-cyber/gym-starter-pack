@@ -102,7 +102,7 @@ export default function LandingPage() {
       name: leadName.trim(),
       phone: leadPhone.trim(),
       fitness_goal: leadGoal || null,
-      user_id: ownerId,
+      user_id: ownerIdForLead,
     });
     setSubmitting(false);
     if (error) {
