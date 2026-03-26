@@ -67,6 +67,20 @@ export default function LandingPage() {
     },
   });
 
+  const ownerId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+  const { data: gymBranding } = usePublicGymSettings(ownerId);
+  const brandName = gymBranding?.gym_name || 'GymOS';
+  const brandLogo = gymBranding?.logo_url;
+  const brandPrimary = gymBranding?.primary_color || '142 71% 45%';
+
+  // Apply branding colors to CSS vars for this page
+  useEffect(() => {
+    if (gymBranding?.primary_color) {
+      document.documentElement.style.setProperty('--primary', gymBranding.primary_color);
+    }
+    return () => { document.documentElement.style.removeProperty('--primary'); };
+  }, [gymBranding?.primary_color]);
+
   const hero = data?.sections.find((s: any) => s.section_type === 'hero');
 
   const scrollTo = (id: string) => {
