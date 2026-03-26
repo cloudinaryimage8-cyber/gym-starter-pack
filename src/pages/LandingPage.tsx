@@ -92,8 +92,8 @@ export default function LandingPage() {
     e.preventDefault();
     if (!leadName.trim() || !leadPhone.trim()) return;
     setSubmitting(true);
-    const ownerId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
-    if (!ownerId) {
+    const ownerIdForLead = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+    if (!ownerIdForLead) {
       toast({ title: 'Error', description: 'Unable to submit. Please try again later.', variant: 'destructive' });
       setSubmitting(false);
       return;
