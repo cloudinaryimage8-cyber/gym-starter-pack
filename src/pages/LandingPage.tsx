@@ -128,10 +128,14 @@ export default function LandingPage() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[hsl(220,25%,4%)]/95 backdrop-blur-xl shadow-2xl shadow-black/20' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(142,71%,35%)] flex items-center justify-center shadow-lg shadow-primary/25">
-              <Dumbbell className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold font-display tracking-tight">GymOS</span>
+            {brandLogo ? (
+              <img src={brandLogo} alt={brandName} className="h-10 w-10 rounded-xl object-cover shadow-lg" />
+            ) : (
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(142,71%,35%)] flex items-center justify-center shadow-lg shadow-primary/25">
+                <Dumbbell className="h-5 w-5 text-primary-foreground" />
+              </div>
+            )}
+            <span className="text-xl font-bold font-display tracking-tight">{brandName}</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
             {navLinks.map(link => (
