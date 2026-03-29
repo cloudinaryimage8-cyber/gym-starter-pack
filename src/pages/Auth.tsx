@@ -41,9 +41,6 @@ export default function Auth() {
           if (error.message.includes('Invalid login credentials')) {
             throw new Error('Invalid email or password. Please try again.');
           }
-          if (error.message.includes('Email not confirmed')) {
-            throw new Error('Your email is not confirmed yet. Please check your inbox or sign up again.');
-          }
           throw error;
         }
         navigate('/app/dashboard');
