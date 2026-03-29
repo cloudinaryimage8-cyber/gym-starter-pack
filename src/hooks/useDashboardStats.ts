@@ -9,9 +9,15 @@ export interface DashboardStats {
   profit: number;
   activeMembers: number;
   expiringMemberships: number;
+  expiredMemberships: number;
   pendingPayments: number;
   newLeads: number;
   recentPayments: { member_name: string; amount: number; date: string }[];
+  todayNewMembers: number;
+  todayPayments: number;
+  todayPaymentsAmount: number;
+  todayLeads: number;
+  monthNewMembers: number;
 }
 
 export function useDashboardStats() {
@@ -19,7 +25,7 @@ export function useDashboardStats() {
   const now = new Date();
   const monthStart = format(startOfMonth(now), 'yyyy-MM-dd');
   const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
-  const sevenDaysFromNow = format(addDays(now, 7), 'yyyy-MM-dd');
+  const threeDaysFromNow = format(addDays(now, 3), 'yyyy-MM-dd');
   const today = format(now, 'yyyy-MM-dd');
 
   return useQuery({
@@ -39,7 +45,7 @@ export function useDashboardStats() {
           .lte('expense_date', monthEnd),
         supabase
           .from('members' as any)
-          .select('expiry_date'),
+          .select('expiry_date, start_date, created_at'),
         supabase
           .from('payments' as any)
           .select('id')
@@ -52,7 +58,7 @@ export function useDashboardStats() {
           .limit(5),
         supabase
           .from('leads' as any)
-          .select('id')
+          .select('id, created_at')
           .eq('status', 'new'),
       ]);
 
@@ -62,12 +68,16 @@ export function useDashboardStats() {
       if (pendingRes.error) throw pendingRes.error;
       if (recentRes.error) throw recentRes.error;
       if (leadsRes.error) throw leadsRes.error;
+      if (todayMembersRes.error) throw todayMembersRes.error;
+      if (todayPaymentsRes.error) throw todayPaymentsRes.error;
+      if (todayLeadsRes.error) throw todayLeadsRes.error;
+      if (monthMembersRes.error) throw monthMembersRes.error;
 
       const monthlyRevenue = (paymentsRes.data || []).reduce((sum: number, p: any) => sum + Number(p.amount), 0);
       const totalExpenses = (expensesRes.data || []).reduce((sum: number, e: any) => sum + Number(e.amount), 0);
       const allMembers = membersRes.data || [];
-      const activeMembers = allMembers.filter((m: any) => m.expiry_date >= today).length;
-      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
+      const activeMembers = allMembers.filter(m => m.expiry_date >= today).length;
+      const expiringMemberships = allMembers.filter(m => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
 
       return {
         monthlyRevenue,
@@ -75,6 +85,7 @@ export function useDashboardStats() {
         profit: monthlyRevenue - totalExpenses,
         activeMembers,
         expiringMemberships,
+        expiredMemberships,
         pendingPayments: (pendingRes.data || []).length,
         newLeads: (leadsRes.data || []).length,
         recentPayments: (recentRes.data || []).map((p: any) => ({
