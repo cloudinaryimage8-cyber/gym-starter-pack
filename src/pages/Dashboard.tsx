@@ -19,6 +19,7 @@ export default function Dashboard() {
     monthlyRevenue: 0, totalExpenses: 0, profit: 0,
     activeMembers: 0, expiringMemberships: 0, expiredMemberships: 0, pendingPayments: 0, newLeads: 0,
     recentPayments: [],
+    todayNewMembers: 0, todayPayments: 0, todayPaymentsAmount: 0, todayLeads: 0, monthNewMembers: 0,
   };
 
   const statCards = [
@@ -135,10 +136,6 @@ export default function Dashboard() {
               <span className={`font-bold text-lg ${s.profit >= 0 ? 'text-primary' : 'text-destructive'}`}>
                 ₹{s.profit.toLocaleString()}
               </span>
-            </div>
-            <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-              <span className="text-sm text-muted-foreground">New Joins</span>
-              <span className="font-semibold">{s.monthNewJoins}</span>
             </div>
           </div>
         </div>
