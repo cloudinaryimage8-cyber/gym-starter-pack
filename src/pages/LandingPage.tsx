@@ -14,7 +14,7 @@ import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
   MapPin, Mail, Clock, Menu, X,
 } from 'lucide-react';
-import type { HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
+import type { HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { Lightbox } from '@/components/Lightbox';
 
