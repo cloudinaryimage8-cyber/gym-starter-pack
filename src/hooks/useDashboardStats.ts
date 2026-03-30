@@ -11,13 +11,19 @@ export interface DashboardStats {
   expiringMemberships: number;
   expiredMemberships: number;
   pendingPayments: number;
+  overdueCount: number;
+  totalPendingAmount: number;
   newLeads: number;
+  totalLeads: number;
+  convertedLeads: number;
+  conversionRate: number;
   recentPayments: { member_name: string; amount: number; date: string }[];
   todayNewMembers: number;
   todayPayments: number;
   todayPaymentsAmount: number;
   todayLeads: number;
   monthNewMembers: number;
+  revenueAtRisk: number;
 }
 
 export function useDashboardStats() {
@@ -46,7 +52,7 @@ export function useDashboardStats() {
           .lte('expense_date', monthEnd),
         supabase
           .from('members' as any)
-          .select('expiry_date, start_date, created_at'),
+          .select('expiry_date, start_date, created_at, plan_id, plans(price)'),
         supabase
           .from('payments' as any)
           .select('id')
@@ -59,8 +65,7 @@ export function useDashboardStats() {
           .limit(5),
         supabase
           .from('leads' as any)
-          .select('id, created_at')
-          .eq('status', 'new'),
+          .select('id, created_at, status'),
       ]);
 
       if (paymentsRes.error) throw paymentsRes.error;
@@ -76,6 +81,8 @@ export function useDashboardStats() {
       const activeMembers = allMembers.filter((m: any) => m.expiry_date >= today).length;
       const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
       const expiredMemberships = allMembers.filter((m: any) => m.expiry_date < today).length;
+      const atRiskMembers = allMembers.filter((m: any) => m.expiry_date < today || (m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow));
+      const revenueAtRisk = atRiskMembers.reduce((sum: number, m: any) => sum + Number(m.plans?.price ?? 0), 0);
 
       // Today stats
       const todayNewMembers = allMembers.filter((m: any) => m.created_at?.startsWith(today)).length;
@@ -87,6 +94,22 @@ export function useDashboardStats() {
       // Month stats
       const monthNewMembers = allMembers.filter((m: any) => m.created_at >= monthStart && m.created_at <= monthEnd).length;
 
+      const allLeads = leadsRes.data || [];
+      const totalLeads = allLeads.length;
+      const newLeadsCount = allLeads.filter((l: any) => l.status === 'new').length;
+      const convertedLeads = allLeads.filter((l: any) => l.status === 'joined').length;
+      const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
+
+      const pendingPaymentsList = pendingRes.data || [];
+      const overduePayments = (paymentsRes.data || []).filter(() => false); // placeholder - use payments table status
+      // Count overdue from payments table
+      const allPaymentsForOverdue = await supabase
+        .from('payments' as any)
+        .select('id, amount, status');
+      const allPay = allPaymentsForOverdue.data || [];
+      const overdueCount = allPay.filter((p: any) => p.status === 'overdue').length;
+      const totalPendingAmount = allPay.filter((p: any) => p.status === 'pending' || p.status === 'overdue').reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
       return {
         monthlyRevenue,
         totalExpenses,
@@ -94,8 +117,13 @@ export function useDashboardStats() {
         activeMembers,
         expiringMemberships,
         expiredMemberships,
-        pendingPayments: (pendingRes.data || []).length,
-        newLeads: (leadsRes.data || []).length,
+        pendingPayments: pendingPaymentsList.length,
+        overdueCount,
+        totalPendingAmount,
+        newLeads: newLeadsCount,
+        totalLeads,
+        convertedLeads,
+        conversionRate,
         recentPayments: (recentRes.data || []).map((p: any) => ({
           member_name: p.members?.name ?? 'Unknown',
           amount: Number(p.amount),
@@ -106,6 +134,7 @@ export function useDashboardStats() {
         todayPaymentsAmount,
         todayLeads,
         monthNewMembers,
+        revenueAtRisk,
       } as DashboardStats;
     },
     enabled: !!user,
