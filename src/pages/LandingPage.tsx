@@ -64,6 +64,8 @@ export default function LandingPage() {
         gallery: getSection('gallery'),
         services: getSection('services'),
         equipment: getSection('equipment'),
+        reviews: getSection('reviews'),
+        branches: getSection('branches'),
       };
     },
   });
