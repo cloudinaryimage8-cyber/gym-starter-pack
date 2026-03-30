@@ -117,6 +117,7 @@ export default function LandingPage() {
 
   const navLinks = [
     { label: 'Home', id: 'hero' },
+    ...(data?.services ? [{ label: 'Services', id: 'services' }] : []),
     ...(data?.pricing ? [{ label: 'Plans', id: 'pricing' }] : []),
     ...(data?.trainers ? [{ label: 'Trainers', id: 'trainers' }] : []),
     { label: 'Contact', id: 'lead-form' },
