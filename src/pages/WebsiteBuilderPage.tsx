@@ -174,6 +174,20 @@ export default function WebsiteBuilderPage() {
             </SectionCard>
           </TabsContent>
 
+          {/* ─── REVIEWS ─── */}
+          <TabsContent value="reviews">
+            <SectionCard sectionKey="reviews" toggles={toggles} setToggles={setToggles} onSave={() => save('reviews')} saving={upsertSection.isPending}>
+              <Field label="Section Title" value={drafts.reviews?.title} onChange={v => updateDraft('reviews', 'title', v)} />
+              <Field label="Subtitle" value={drafts.reviews?.subtitle} onChange={v => updateDraft('reviews', 'subtitle', v)} />
+              <ItemList
+                items={drafts.reviews?.items ?? []}
+                onRemove={i => removeItem('reviews', i)}
+                renderItem={(item: ReviewItem) => `${'⭐'.repeat(item.rating)} ${item.name}: "${(item.text ?? '').slice(0, 40)}..."`}
+              />
+              <AddReviewForm onAdd={item => addItem('reviews', item)} />
+            </SectionCard>
+          </TabsContent>
+
           {/* ─── GALLERY ─── */}
           <TabsContent value="gallery">
             <SectionCard sectionKey="gallery" toggles={toggles} setToggles={setToggles} onSave={() => save('gallery')} saving={upsertSection.isPending}>
