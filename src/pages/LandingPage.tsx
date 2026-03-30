@@ -89,6 +89,8 @@ export default function LandingPage() {
   const galleryContent = (data?.gallery?.content ?? {}) as GalleryContent;
   const servicesContent = (data?.services?.content ?? {}) as ServicesContent;
   const equipmentContent = (data?.equipment?.content ?? {}) as EquipmentContent;
+  const reviewsContent = (data?.reviews?.content ?? {}) as ReviewsContent;
+  const branchesContent = (data?.branches?.content ?? {}) as BranchesContent;
 
   const scrollTo = (id: string) => {
     setMobileMenuOpen(false);
