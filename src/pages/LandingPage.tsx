@@ -62,6 +62,8 @@ export default function LandingPage() {
         trainers: getSection('trainers'),
         testimonials: getSection('testimonials'),
         gallery: getSection('gallery'),
+        services: getSection('services'),
+        equipment: getSection('equipment'),
       };
     },
   });
