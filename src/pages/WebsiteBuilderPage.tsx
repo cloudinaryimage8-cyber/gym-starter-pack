@@ -410,3 +410,54 @@ function AddEquipmentForm({ onAdd }: { onAdd: (item: EquipmentItem) => void }) {
     </div>
   );
 }
+
+function AddReviewForm({ onAdd }: { onAdd: (item: ReviewItem) => void }) {
+  const [name, setName] = useState('');
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState('');
+  const add = () => {
+    if (!name.trim()) return;
+    onAdd({ name: name.trim(), rating, text: text || undefined });
+    setName(''); setRating(5); setText('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium flex items-center gap-2"><Star className="h-4 w-4 text-primary" /> Add Review</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Input value={name} onChange={e => setName(e.target.value)} placeholder="Reviewer name" />
+        <Select value={String(rating)} onValueChange={v => setRating(Number(v))}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {[5, 4, 3, 2, 1].map(r => (
+              <SelectItem key={r} value={String(r)}>{'⭐'.repeat(r)} ({r})</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input value={text} onChange={e => setText(e.target.value)} placeholder="Review text" />
+      </div>
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Review</Button>
+    </div>
+  );
+}
+
+function AddBranchForm({ onAdd }: { onAdd: (item: BranchItem) => void }) {
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [contact, setContact] = useState('');
+  const add = () => {
+    if (!name.trim()) return;
+    onAdd({ name: name.trim(), location: location || undefined, contact: contact || undefined });
+    setName(''); setLocation(''); setContact('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Add Branch</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Input value={name} onChange={e => setName(e.target.value)} placeholder="Branch name" />
+        <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="Location / Address" />
+        <Input value={contact} onChange={e => setContact(e.target.value)} placeholder="Contact number" />
+      </div>
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Branch</Button>
+    </div>
+  );
+}
