@@ -81,7 +81,29 @@ export interface EquipmentContent {
   items: EquipmentItem[];
 }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment';
+export interface ReviewItem {
+  name: string;
+  rating: number;
+  text?: string;
+}
+export interface ReviewsContent {
+  title?: string;
+  subtitle?: string;
+  items: ReviewItem[];
+}
+
+export interface BranchItem {
+  name: string;
+  location?: string;
+  contact?: string;
+}
+export interface BranchesContent {
+  title?: string;
+  subtitle?: string;
+  items: BranchItem[];
+}
+
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches';
 
 export interface WebsiteContentRow {
   id: string;
@@ -123,9 +145,17 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
     label: 'Equipment',
     defaultContent: { title: 'World-Class Equipment', subtitle: 'Train with the best machines and gear.', items: [] } as EquipmentContent,
   },
+  reviews: {
+    label: 'Reviews',
+    defaultContent: { title: 'Google Reviews', subtitle: 'See what our members say about us.', items: [] } as ReviewsContent,
+  },
+  branches: {
+    label: 'Branches',
+    defaultContent: { title: 'Our Branches', subtitle: 'Find a location near you.', items: [] } as BranchesContent,
+  },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'gallery'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches'];
 
 // ─── Hook for admin (authenticated) ───
 export function useWebsiteContent() {
