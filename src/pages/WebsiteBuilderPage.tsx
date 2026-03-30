@@ -3,8 +3,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import {
   useWebsiteContent, ALL_SECTION_KEYS, SECTION_DEFAULTS, SectionKey,
   HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
-  ServicesContent, EquipmentContent,
-  TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem,
+  ServicesContent, EquipmentContent, ReviewsContent, BranchesContent,
+  TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
