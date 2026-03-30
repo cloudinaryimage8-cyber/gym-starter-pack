@@ -81,7 +81,29 @@ export interface EquipmentContent {
   items: EquipmentItem[];
 }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment';
+export interface ReviewItem {
+  name: string;
+  rating: number;
+  text?: string;
+}
+export interface ReviewsContent {
+  title?: string;
+  subtitle?: string;
+  items: ReviewItem[];
+}
+
+export interface BranchItem {
+  name: string;
+  location?: string;
+  contact?: string;
+}
+export interface BranchesContent {
+  title?: string;
+  subtitle?: string;
+  items: BranchItem[];
+}
+
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches';
 
 export interface WebsiteContentRow {
   id: string;
