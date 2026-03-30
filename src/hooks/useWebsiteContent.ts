@@ -58,7 +58,30 @@ export interface GalleryImageItem {
   caption?: string;
 }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery';
+export interface ServiceItem {
+  title: string;
+  description?: string;
+  icon?: string;
+  image_url?: string;
+}
+export interface ServicesContent {
+  title?: string;
+  subtitle?: string;
+  items: ServiceItem[];
+}
+
+export interface EquipmentItem {
+  name: string;
+  description?: string;
+  image_url?: string;
+}
+export interface EquipmentContent {
+  title?: string;
+  subtitle?: string;
+  items: EquipmentItem[];
+}
+
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment';
 
 export interface WebsiteContentRow {
   id: string;
