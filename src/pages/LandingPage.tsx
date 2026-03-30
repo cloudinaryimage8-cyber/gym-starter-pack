@@ -255,7 +255,79 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── PRICING (only if enabled) ─── */}
+      {/* ─── SERVICES (only if enabled & has items) ─── */}
+      {data?.services && (servicesContent.items?.length ?? 0) > 0 && (
+        <section id="services" className="py-28 px-4 sm:px-6 lg:px-8 relative">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
+          </div>
+          <div className="max-w-7xl mx-auto relative z-10">
+            <AnimatedSection className="text-center mb-16">
+              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">What We Offer</p>
+              <h2 className="text-4xl sm:text-5xl font-bold font-display">{servicesContent.title || 'Our Services'}</h2>
+              <p className="mt-5 text-[hsl(220,10%,50%)] max-w-xl mx-auto text-lg">{servicesContent.subtitle || 'Explore our range of fitness programs.'}</p>
+            </AnimatedSection>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {servicesContent.items.map((s, i) => (
+                <AnimatedSection key={i} delay={i * 0.08}>
+                  <div className="group rounded-2xl bg-[hsl(220,25%,7%)] border border-[hsl(220,20%,12%)] overflow-hidden hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 h-full flex flex-col">
+                    {s.image_url ? (
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <img src={s.image_url} alt={s.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(220,25%,7%)] via-transparent to-transparent opacity-60" />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center pt-8 pb-2">
+                        <span className="text-5xl">{s.icon || '💪'}</span>
+                      </div>
+                    )}
+                    <div className="p-6 flex-1 flex flex-col">
+                      <h3 className="font-display font-bold text-lg mb-2">{s.title}</h3>
+                      {s.description && <p className="text-sm text-[hsl(220,10%,50%)] leading-relaxed flex-1">{s.description}</p>}
+                    </div>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── EQUIPMENT (only if enabled & has items) ─── */}
+      {data?.equipment && (equipmentContent.items?.length ?? 0) > 0 && (
+        <section id="equipment" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
+          <div className="max-w-7xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Our Facility</p>
+              <h2 className="text-4xl sm:text-5xl font-bold font-display">{equipmentContent.title || 'World-Class Equipment'}</h2>
+              <p className="mt-5 text-[hsl(220,10%,50%)] max-w-xl mx-auto text-lg">{equipmentContent.subtitle || 'Train with the best machines and gear.'}</p>
+            </AnimatedSection>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {equipmentContent.items.map((eq, i) => (
+                <AnimatedSection key={i} delay={i * 0.08}>
+                  <div className="group rounded-2xl bg-[hsl(220,25%,7%)] border border-[hsl(220,20%,12%)] overflow-hidden hover:border-primary/40 transition-all duration-500 hover:-translate-y-1">
+                    {eq.image_url ? (
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <img src={eq.image_url} alt={eq.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(220,25%,7%)] via-transparent to-transparent opacity-60" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[4/3] bg-[hsl(220,20%,10%)] flex items-center justify-center">
+                        <Dumbbell className="h-16 w-16 text-[hsl(220,10%,25%)]" />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <h3 className="font-display font-bold text-lg mb-2">{eq.name}</h3>
+                      {eq.description && <p className="text-sm text-[hsl(220,10%,50%)] leading-relaxed">{eq.description}</p>}
+                    </div>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {data?.pricing && (data?.plans?.length ?? 0) > 0 && (
         <section id="pricing" className="py-28 px-4 sm:px-6 lg:px-8 relative">
           <div className="absolute inset-0 pointer-events-none">
