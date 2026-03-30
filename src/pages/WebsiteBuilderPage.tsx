@@ -214,6 +214,20 @@ export default function WebsiteBuilderPage() {
               <AddGalleryForm onAdd={item => addItem('gallery', item)} />
             </SectionCard>
           </TabsContent>
+
+          {/* ─── BRANCHES ─── */}
+          <TabsContent value="branches">
+            <SectionCard sectionKey="branches" toggles={toggles} setToggles={setToggles} onSave={() => save('branches')} saving={upsertSection.isPending}>
+              <Field label="Section Title" value={drafts.branches?.title} onChange={v => updateDraft('branches', 'title', v)} />
+              <Field label="Subtitle" value={drafts.branches?.subtitle} onChange={v => updateDraft('branches', 'subtitle', v)} />
+              <ItemList
+                items={drafts.branches?.items ?? []}
+                onRemove={i => removeItem('branches', i)}
+                renderItem={(item: BranchItem) => `${item.name}${item.location ? ` — ${item.location}` : ''}`}
+              />
+              <AddBranchForm onAdd={item => addItem('branches', item)} />
+            </SectionCard>
+          </TabsContent>
         </Tabs>
       )}
     </div>
