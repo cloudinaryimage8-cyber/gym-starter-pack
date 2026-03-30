@@ -85,6 +85,8 @@ export default function LandingPage() {
   const trainersContent = (data?.trainers?.content ?? {}) as TrainersContent;
   const testimonialsContent = (data?.testimonials?.content ?? {}) as TestimonialsContent;
   const galleryContent = (data?.gallery?.content ?? {}) as GalleryContent;
+  const servicesContent = (data?.services?.content ?? {}) as ServicesContent;
+  const equipmentContent = (data?.equipment?.content ?? {}) as EquipmentContent;
 
   const scrollTo = (id: string) => {
     setMobileMenuOpen(false);
