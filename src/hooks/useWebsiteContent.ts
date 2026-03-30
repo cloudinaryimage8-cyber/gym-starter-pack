@@ -115,9 +115,17 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
     label: 'Gallery',
     defaultContent: { title: 'Gallery', items: [] } as GalleryContent,
   },
+  services: {
+    label: 'Services',
+    defaultContent: { title: 'Our Services', subtitle: 'Explore our range of fitness programs.', items: [] } as ServicesContent,
+  },
+  equipment: {
+    label: 'Equipment',
+    defaultContent: { title: 'World-Class Equipment', subtitle: 'Train with the best machines and gear.', items: [] } as EquipmentContent,
+  },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'trainers', 'testimonials', 'gallery'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'gallery'];
 
 // ─── Hook for admin (authenticated) ───
 export function useWebsiteContent() {
