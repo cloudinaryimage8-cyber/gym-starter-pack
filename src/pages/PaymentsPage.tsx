@@ -23,7 +23,6 @@ const methods = [
 ];
 
 export default function PaymentsPage() {
-  const { user, loading } = useAuth();
   const { data: payments, isLoading } = usePayments();
   const { data: members } = useMembers();
   const createPayment = useCreatePayment();

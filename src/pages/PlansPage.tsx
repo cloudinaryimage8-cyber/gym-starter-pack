@@ -46,7 +46,6 @@ function PlanForm({ plan, onSubmit, onCancel }: {
 }
 
 export default function PlansPage() {
-  const { user, loading } = useAuth();
   const { data: plans, isLoading } = usePlans();
   const createPlan = useCreatePlan();
   const updatePlan = useUpdatePlan();

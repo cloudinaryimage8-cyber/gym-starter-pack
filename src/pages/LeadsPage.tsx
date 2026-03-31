@@ -22,7 +22,6 @@ const statusConfig: Record<string, { color: string; bg: string; border: string }
 };
 
 export default function LeadsPage() {
-  const { loading } = useAuth();
   const { leads, isLoading, addLead, updateLeadStatus, deleteLead, convertToMember } = useLeads();
   const { data: plans } = usePlans();
   const [open, setOpen] = useState(false);

@@ -175,7 +175,6 @@ function getPaymentStatus(member: Member, payments: any[]) {
 }
 
 export default function MembersPage() {
-  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { data: members, isLoading } = useMembers();
   const { data: plans } = usePlans();

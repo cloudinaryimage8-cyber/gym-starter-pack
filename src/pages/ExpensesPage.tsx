@@ -11,7 +11,6 @@ import { Plus, Trash2, Receipt } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function ExpensesPage() {
-  const { user, loading } = useAuth();
   const { data: expenses, isLoading } = useExpenses();
   const createExpense = useCreateExpense();
   const deleteExpense = useDeleteExpense();

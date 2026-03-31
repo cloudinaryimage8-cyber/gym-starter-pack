@@ -16,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Save, ExternalLink, Plus, Trash2, Film, Image, Dumbbell, Sparkles, Star, MapPin, Phone } from 'lucide-react';
 
 export default function WebsiteBuilderPage() {
-  const { user, loading } = useAuth();
   const { sections, isLoading, getSectionContent, isSectionEnabled, upsertSection } = useWebsiteContent();
 
   const [drafts, setDrafts] = useState<Record<string, any>>({});
