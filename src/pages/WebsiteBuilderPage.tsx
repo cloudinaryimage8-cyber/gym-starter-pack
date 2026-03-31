@@ -33,7 +33,7 @@ export default function WebsiteBuilderPage() {
     setToggles(t);
   }, [sections]);
 
-  if (loading) return null;
+  
 
   const updateDraft = (key: SectionKey, field: string, value: any) => {
     setDrafts(prev => ({ ...prev, [key]: { ...(prev[key] ?? SECTION_DEFAULTS[key].defaultContent), [field]: value } }));

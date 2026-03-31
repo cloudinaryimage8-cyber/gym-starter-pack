@@ -192,7 +192,7 @@ export default function MembersPage() {
   const [collectAmount, setCollectAmount] = useState('');
   const [collectMethod, setCollectMethod] = useState('cash');
 
-  if (loading) return null;
+  
 
   const handleSubmit = async (data: { name: string; phone: string; plan_id: string; start_date: string; expiry_date: string }) => {
     try {

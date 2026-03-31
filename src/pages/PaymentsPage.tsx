@@ -37,7 +37,7 @@ export default function PaymentsPage() {
   const [status, setStatus] = useState('paid');
   const [note, setNote] = useState('');
 
-  if (loading) return null;
+  
 
   const resetForm = () => {
     setMemberId(''); setAmount(''); setDate(format(new Date(), 'yyyy-MM-dd'));

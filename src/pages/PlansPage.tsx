@@ -54,7 +54,7 @@ export default function PlansPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | undefined>();
 
-  if (loading) return null;
+  
 
   const handleSubmit = async (data: { name: string; price: number; duration_days: number }) => {
     try {

@@ -31,7 +31,7 @@ export default function LeadsPage() {
   const [filter, setFilter] = useState<string>('all');
   const [convertLead, setConvertLead] = useState<typeof leads[0] | null>(null);
 
-  if (loading) return null;
+  
 
   const handleAdd = () => {
     if (!name.trim() || !phone.trim()) return;

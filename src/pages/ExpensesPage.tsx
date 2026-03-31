@@ -21,7 +21,7 @@ export default function ExpensesPage() {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [category, setCategory] = useState('');
 
-  if (loading) return null;
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
