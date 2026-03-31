@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { db as supabase } from '@/integrations/supabase/db';
 import { usePublicGymSettings } from '@/hooks/useGymSettings';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,6 +16,7 @@ import type { HeroContent, PricingContent, TrainersContent, TestimonialsContent,
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { Lightbox } from '@/components/Lightbox';
 import { PageLoader } from '@/components/PageLoader';
+import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
@@ -81,7 +80,6 @@ function ParallaxSection({ children, className = '', speed = 0.15 }: { children:
 }
 
 export default function LandingPage() {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [leadName, setLeadName] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
@@ -96,19 +94,19 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch website_content + plans
+  // Fetch website_content + plans from mock data
   const { data, isLoading } = useQuery({
     queryKey: ['public-landing'],
     queryFn: async () => {
-      const [contentRes, plansRes] = await Promise.all([
-        supabase.from('website_content' as any).select('*').eq('is_enabled', true),
-        supabase.from('plans').select('*').order('price').limit(10),
+      const [content, plans] = await Promise.all([
+        ds.getPublicWebsiteContent(),
+        ds.getPlans(),
       ]);
-      const rows = (contentRes.data ?? []) as WebsiteContentRow[];
+      const rows = content as WebsiteContentRow[];
       const getSection = (key: string) => rows.find(r => r.section_key === key);
       return {
         sections: rows,
-        plans: plansRes.data ?? [],
+        plans: plans.sort((a, b) => a.price - b.price),
         hero: getSection('hero'),
         pricing: getSection('pricing'),
         trainers: getSection('trainers'),
@@ -122,8 +120,7 @@ export default function LandingPage() {
     },
   });
 
-  const gymId = data?.sections?.[0]?.user_id || (data?.plans?.[0] as any)?.user_id;
-  const { data: gymBranding } = usePublicGymSettings(gymId);
+  const { data: gymBranding } = usePublicGymSettings();
   const brandName = gymBranding?.gym_name || 'GymOS';
   const brandLogo = gymBranding?.logo_url;
 
@@ -153,22 +150,14 @@ export default function LandingPage() {
     e.preventDefault();
     if (!leadName.trim() || !leadPhone.trim()) return;
     setSubmitting(true);
-    const ownerIdForLead = gymId;
-    if (!ownerIdForLead) {
-      toast({ title: 'Error', description: 'Unable to submit. Please try again later.', variant: 'destructive' });
-      setSubmitting(false);
-      return;
-    }
-    const { error } = await supabase.from('leads').insert({
-      name: leadName.trim(), phone: leadPhone.trim(), fitness_goal: leadGoal || null, user_id: ownerIdForLead,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    } else {
+    try {
+      await ds.createLead({ name: leadName.trim(), phone: leadPhone.trim(), fitness_goal: leadGoal || undefined });
       toast({ title: '🎉 Welcome!', description: "We'll contact you shortly to get started." });
       setLeadName(''); setLeadPhone(''); setLeadGoal('');
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     }
+    setSubmitting(false);
   };
 
   const navLinks = [
@@ -207,9 +196,9 @@ export default function LandingPage() {
             <Button variant="ghost" className="text-[hsl(220,10%,60%)] hover:text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,10%)]" onClick={() => scrollTo('lead-form')}>
               Book Free Trial
             </Button>
-            <Link to={user ? '/app/dashboard' : '/login'}>
+            <Link to="/app/dashboard">
               <Button size="sm" className="bg-[hsl(220,20%,12%)] text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,16%)] border border-[hsl(220,20%,18%)]">
-                {user ? 'Dashboard' : 'Admin Login'}
+                Go to Dashboard
               </Button>
             </Link>
           </div>
@@ -224,8 +213,8 @@ export default function LandingPage() {
                 {link.label}
               </button>
             ))}
-            <Link to={user ? '/app/dashboard' : '/login'} className="block">
-              <Button className="w-full mt-2">{user ? 'Dashboard' : 'Admin Login'}</Button>
+            <Link to="/app/dashboard" className="block">
+              <Button className="w-full mt-2">Go to Dashboard</Button>
             </Link>
           </motion.div>
         )}
@@ -233,7 +222,6 @@ export default function LandingPage() {
 
       {/* ─── HERO ─── */}
       <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Video or Image */}
         {heroContent.video_url ? (
           <>
             <HeroBackground url={heroContent.video_url} className="hidden md:block" />
@@ -249,7 +237,6 @@ export default function LandingPage() {
             <div className="absolute inset-0 md:hidden" style={{ backgroundImage: `url(${heroContent.mobile_image_url || heroContent.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
           </>
         ) : null}
-        {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsla(220,25%,4%,0.5)] via-[hsla(220,25%,4%,0.7)] to-[hsl(220,25%,4%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]" />
@@ -308,7 +295,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── SERVICES (only if enabled & has items) ─── */}
+      {/* ─── SERVICES ─── */}
       {data?.services && (servicesContent.items?.length ?? 0) > 0 && (
         <section id="services" className="py-28 px-4 sm:px-6 lg:px-8 relative">
           <div className="absolute inset-0 pointer-events-none">
@@ -346,7 +333,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ─── EQUIPMENT (only if enabled & has items) ─── */}
+      {/* ─── EQUIPMENT ─── */}
       {data?.equipment && (equipmentContent.items?.length ?? 0) > 0 && (
         <section id="equipment" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
           <div className="max-w-7xl mx-auto">
@@ -424,7 +411,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ─── TRAINERS (only if enabled & has items) ─── */}
+      {/* ─── TRAINERS ─── */}
       {data?.trainers && (trainersContent.items?.length ?? 0) > 0 && (
         <section id="trainers" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
           <div className="max-w-7xl mx-auto">
@@ -459,13 +446,12 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ─── TESTIMONIALS (text + video) ─── */}
+      {/* ─── TESTIMONIALS ─── */}
       {data?.testimonials && (testimonialsContent.items?.length ?? 0) > 0 && (() => {
         const textItems = testimonialsContent.items.filter(t => !t.video_url);
         const videoItems = testimonialsContent.items.filter(t => !!t.video_url);
         return (
           <>
-            {/* Text testimonials */}
             {textItems.length > 0 && (
               <section id="testimonials" className="py-28 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
@@ -495,8 +481,6 @@ export default function LandingPage() {
                 </div>
               </section>
             )}
-
-            {/* Video testimonials */}
             {videoItems.length > 0 && (
               <section id="video-testimonials" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
                 <div className="max-w-7xl mx-auto">
@@ -524,7 +508,7 @@ export default function LandingPage() {
         );
       })()}
 
-      {/* ─── GALLERY (preview, limit 6) ─── */}
+      {/* ─── GALLERY ─── */}
       {data?.gallery && (galleryContent.items?.length ?? 0) > 0 && (
         <section id="gallery" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
           <div className="max-w-7xl mx-auto">
@@ -567,7 +551,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ─── GOOGLE REVIEWS (only if enabled & has items) ─── */}
+      {/* ─── GOOGLE REVIEWS ─── */}
       {data?.reviews && (reviewsContent.items?.length ?? 0) > 0 && (
         <section id="reviews" className="py-28 px-4 sm:px-6 lg:px-8 relative">
           <div className="absolute inset-0 pointer-events-none">
@@ -606,7 +590,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ─── BRANCHES / FRANCHISE (only if enabled & has items) ─── */}
+      {/* ─── BRANCHES ─── */}
       {data?.branches && (branchesContent.items?.length ?? 0) > 0 && (
         <section id="branches" className="py-28 px-4 sm:px-6 lg:px-8 bg-[hsl(220,25%,5%)]">
           <div className="max-w-7xl mx-auto">
@@ -737,14 +721,14 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 pt-8 border-t border-[hsl(220,20%,10%)] flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-[hsl(220,10%,35%)]">© {new Date().getFullYear()} {brandName}. All rights reserved.</p>
-            <Link to={user ? '/app/dashboard' : '/login'} className="text-xs text-[hsl(220,10%,35%)] hover:text-primary transition-colors">
-              {user ? 'Go to Dashboard' : 'Admin Login'}
+            <Link to="/app/dashboard" className="text-xs text-[hsl(220,10%,35%)] hover:text-primary transition-colors">
+              Go to Dashboard
             </Link>
           </div>
         </div>
       </footer>
 
-      <FloatingContactButtons gymId={gymId} />
+      <FloatingContactButtons />
     </div>
   );
 }
