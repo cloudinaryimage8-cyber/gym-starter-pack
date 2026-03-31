@@ -1,12 +1,31 @@
-import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target, UserCheck, Percent, ShieldAlert } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target, UserCheck, Percent, ShieldAlert, Database, RotateCcw, CheckCircle } from 'lucide-react';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { SetupBanner } from '@/components/SetupBanner';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { seedDemoData, resetDemoData } from '@/data/mockDb';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats();
+  const { toast } = useToast();
+  const qc = useQueryClient();
+
+  const handleSeed = () => {
+    seedDemoData();
+    qc.invalidateQueries();
+    toast({ title: '✅ Demo data loaded!' });
+  };
+
+  const handleReset = () => {
+    resetDemoData();
+    qc.invalidateQueries();
+    toast({ title: '🗑️ All data cleared!' });
+  };
 
   if (isLoading) {
     return (
