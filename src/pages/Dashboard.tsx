@@ -113,12 +113,20 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <SetupBanner />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {format(new Date(), 'EEEE, dd MMMM yyyy')}
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={handleSeed}>
+            <Database className="mr-2 h-4 w-4" /> Load Demo Data
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleReset} className="text-destructive border-destructive/30 hover:bg-destructive/10">
+            <RotateCcw className="mr-2 h-4 w-4" /> Reset Data
+          </Button>
         </div>
       </div>
 
