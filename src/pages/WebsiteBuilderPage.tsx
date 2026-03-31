@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import {
   useWebsiteContent, ALL_SECTION_KEYS, SECTION_DEFAULTS, SectionKey,
   HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
@@ -17,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Save, ExternalLink, Plus, Trash2, Film, Image, Dumbbell, Sparkles, Star, MapPin, Phone } from 'lucide-react';
 
 export default function WebsiteBuilderPage() {
-  const { user, loading } = useAuth();
   const { sections, isLoading, getSectionContent, isSectionEnabled, upsertSection } = useWebsiteContent();
 
   const [drafts, setDrafts] = useState<Record<string, any>>({});
@@ -35,7 +33,7 @@ export default function WebsiteBuilderPage() {
     setToggles(t);
   }, [sections]);
 
-  if (loading) return null;
+  
 
   const updateDraft = (key: SectionKey, field: string, value: any) => {
     setDrafts(prev => ({ ...prev, [key]: { ...(prev[key] ?? SECTION_DEFAULTS[key].defaultContent), [field]: value } }));

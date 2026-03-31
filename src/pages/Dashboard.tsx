@@ -1,12 +1,31 @@
-import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target, UserCheck, Percent, ShieldAlert } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target, UserCheck, Percent, ShieldAlert, Database, RotateCcw, CheckCircle } from 'lucide-react';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { SetupBanner } from '@/components/SetupBanner';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { seedDemoData, resetDemoData } from '@/data/mockDb';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats();
+  const { toast } = useToast();
+  const qc = useQueryClient();
+
+  const handleSeed = () => {
+    seedDemoData();
+    qc.invalidateQueries();
+    toast({ title: '✅ Demo data loaded!' });
+  };
+
+  const handleReset = () => {
+    resetDemoData();
+    qc.invalidateQueries();
+    toast({ title: '🗑️ All data cleared!' });
+  };
 
   if (isLoading) {
     return (
@@ -94,12 +113,20 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <SetupBanner />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold font-display">Dashboard</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {format(new Date(), 'EEEE, dd MMMM yyyy')}
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={handleSeed}>
+            <Database className="mr-2 h-4 w-4" /> Load Demo Data
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleReset} className="text-destructive border-destructive/30 hover:bg-destructive/10">
+            <RotateCcw className="mr-2 h-4 w-4" /> Reset Data
+          </Button>
         </div>
       </div>
 
