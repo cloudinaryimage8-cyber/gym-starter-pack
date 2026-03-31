@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { useLeads, LeadStatus, LEAD_STAGES } from '@/hooks/useLeads';
 import { usePlans } from '@/hooks/usePlans';
 import { Button } from '@/components/ui/button';
