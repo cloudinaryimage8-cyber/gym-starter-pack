@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import {
   useWebsiteContent, ALL_SECTION_KEYS, SECTION_DEFAULTS, SectionKey,
   HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
