@@ -18,6 +18,7 @@ import OrbitAnimation from '@/components/OrbitAnimation';
 import { Lightbox } from '@/components/Lightbox';
 import { PageLoader } from '@/components/PageLoader';
 import { PublicNavbar } from '@/components/PublicNavbar';
+import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
