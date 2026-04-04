@@ -354,31 +354,22 @@ export default function LandingPage() {
             <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
           </div>
           <div className="max-w-7xl mx-auto relative z-10">
-            <AnimatedSection className="text-center mb-16" variant="blur">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">What We Offer</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{servicesContent.title || 'Our Services'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{servicesContent.subtitle || 'Explore our range of fitness programs.'}</p>
-            </AnimatedSection>
+            <SectionHeader tag="What We Offer" title={servicesContent.title || 'Our Services'} subtitle={servicesContent.subtitle} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {servicesContent.items.map((s, i) => (
-                <AnimatedSection key={i} delay={i * 0.08}>
-                  <div className="group rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 h-full flex flex-col">
-                    {s.image_url ? (
-                      <div className="relative aspect-[16/10] overflow-hidden">
-                        <img src={s.image_url} alt={s.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-ws-card via-transparent to-transparent opacity-60" />
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center pt-8 pb-2">
-                        <span className="text-5xl">{s.icon || '💪'}</span>
-                      </div>
-                    )}
-                    <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="font-display font-bold text-lg mb-2">{s.title}</h3>
-                      {s.description && <p className="text-sm text-ws-text-subtle leading-relaxed flex-1">{s.description}</p>}
-                    </div>
-                  </div>
-                </AnimatedSection>
+                <PremiumCard
+                  key={i}
+                  index={i}
+                  imageUrl={s.image_url}
+                  title={s.title}
+                  description={s.description}
+                  fallbackType="service"
+                  aspectRatio="aspect-[16/10]"
+                >
+                  {!s.image_url && s.icon && (
+                    <span className="text-3xl">{s.icon}</span>
+                  )}
+                </PremiumCard>
               ))}
             </div>
           </div>
@@ -389,31 +380,18 @@ export default function LandingPage() {
       {data?.equipment && (equipmentContent.items?.length ?? 0) > 0 && (
         <section id="equipment" className="py-28 px-4 sm:px-6 lg:px-8 bg-ws-card-alt">
           <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Our Facility</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{equipmentContent.title || 'World-Class Equipment'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{equipmentContent.subtitle || 'Train with the best machines and gear.'}</p>
-            </AnimatedSection>
+            <SectionHeader tag="Our Facility" title={equipmentContent.title || 'World-Class Equipment'} subtitle={equipmentContent.subtitle} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {equipmentContent.items.map((eq, i) => (
-                <AnimatedSection key={i} delay={i * 0.08}>
-                  <div className="group rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:-translate-y-1">
-                    {eq.image_url ? (
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <img src={eq.image_url} alt={eq.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-ws-card via-transparent to-transparent opacity-60" />
-                      </div>
-                    ) : (
-                      <div className="aspect-[4/3] bg-ws-border-dim flex items-center justify-center">
-                        <Dumbbell className="h-16 w-16 text-ws-text-icon" />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <h3 className="font-display font-bold text-lg mb-2">{eq.name}</h3>
-                      {eq.description && <p className="text-sm text-ws-text-subtle leading-relaxed">{eq.description}</p>}
-                    </div>
-                  </div>
-                </AnimatedSection>
+                <PremiumCard
+                  key={i}
+                  index={i}
+                  imageUrl={eq.image_url}
+                  title={eq.name}
+                  description={eq.description}
+                  fallbackType="equipment"
+                  aspectRatio="aspect-[4/3]"
+                />
               ))}
             </div>
           </div>
@@ -426,12 +404,8 @@ export default function LandingPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
           </div>
           <div className="max-w-7xl mx-auto relative z-10">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Pricing</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{pricingContent.title || 'Choose Your Plan'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{pricingContent.subtitle || 'Flexible plans designed to fit your fitness journey.'}</p>
-              {pricingContent.cta_note && <p className="mt-3 text-primary/80 font-semibold text-sm">{pricingContent.cta_note}</p>}
-            </AnimatedSection>
+            <SectionHeader tag="Pricing" title={pricingContent.title || 'Choose Your Plan'} subtitle={pricingContent.subtitle || 'Flexible plans designed to fit your fitness journey.'} />
+            {pricingContent.cta_note && <p className="text-center -mt-10 mb-16 text-primary/80 font-semibold text-sm">{pricingContent.cta_note}</p>}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {data!.plans.map((plan: any, i: number) => {
                 const isPopular = i === Math.floor((data!.plans.length - 1) / 2);
@@ -467,38 +441,29 @@ export default function LandingPage() {
       {data?.trainers && (trainersContent.items?.length ?? 0) > 0 && (
         <section id="trainers" className="py-28 px-4 sm:px-6 lg:px-8 bg-ws-card-alt">
           <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Expert Coaching</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{trainersContent.title || 'Meet Our Trainers'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{trainersContent.subtitle || 'Certified professionals dedicated to your transformation.'}</p>
-            </AnimatedSection>
+            <SectionHeader tag="Expert Coaching" title={trainersContent.title || 'Meet Our Trainers'} subtitle={trainersContent.subtitle} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {trainersContent.items.map((t, i) => (
-                <AnimatedSection key={i} delay={i * 0.1}>
-                  <div className="group rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:-translate-y-1">
-                    <div className="relative aspect-[4/5] overflow-hidden">
-                      {t.image_url ? (
-                        <img src={t.image_url} alt={t.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full bg-ws-border-dim flex items-center justify-center">
-                          <User className="h-20 w-20 text-ws-text-icon" />
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-ws-darker via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                        <h3 className="font-display font-bold text-xl">{t.name}</h3>
-                        {t.specialization && <p className="text-primary font-semibold text-sm mt-1">{t.specialization}</p>}
-                      </div>
+                <PremiumCard
+                  key={i}
+                  index={i}
+                  imageUrl={t.image_url}
+                  fallbackType="trainer"
+                  aspectRatio="aspect-[4/5]"
+                  imageOverlay={
+                    <div>
+                      <h3 className="font-display font-bold text-xl text-white">{t.name}</h3>
+                      {t.specialization && <p className="text-primary font-semibold text-sm mt-1">{t.specialization}</p>}
                     </div>
-                  </div>
-                </AnimatedSection>
+                  }
+                />
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* ─── TESTIMONIALS ─── */}
+      {/* ─── TESTIMONIALS (Text + Video) ─── */}
       {data?.testimonials && (testimonialsContent.items?.length ?? 0) > 0 && (() => {
         const textItems = testimonialsContent.items.filter(t => !t.video_url);
         const videoItems = testimonialsContent.items.filter(t => !!t.video_url);
@@ -507,28 +472,36 @@ export default function LandingPage() {
             {textItems.length > 0 && (
               <section id="testimonials" className="py-28 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                  <AnimatedSection className="text-center mb-16">
-                    <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Success Stories</p>
-                    <h2 className="text-4xl sm:text-5xl font-bold font-display">{testimonialsContent.title || 'What Our Members Say'}</h2>
-                    <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{testimonialsContent.subtitle || 'Real results from real people.'}</p>
-                  </AnimatedSection>
+                  <SectionHeader tag="Success Stories" title={testimonialsContent.title || 'What Our Members Say'} subtitle={testimonialsContent.subtitle} />
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {textItems.map((t, i) => (
-                      <AnimatedSection key={i} delay={i * 0.1}>
-                        <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-5 hover:border-primary/30 transition-colors duration-300 h-full flex flex-col">
-                          <div className="flex gap-1">
-                            {[...Array(5)].map((_, j) => <Star key={j} className="h-4 w-4 fill-primary text-primary" />)}
-                          </div>
-                          {t.content && <p className="text-ws-text-label leading-relaxed flex-1">"{t.content}"</p>}
-                          <div className="flex items-center gap-3 pt-4 border-t border-ws-border">
-                            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                              <User className="h-5 w-5 text-primary" />
+                    {textItems.map((t, i) => {
+                      const ref = useRef(null);
+                      const inView = useInView(ref, { margin: '-60px', amount: 0.2 });
+                      const fromLeft = i % 2 === 0;
+                      return (
+                        <motion.div
+                          key={i}
+                          ref={ref}
+                          initial={{ opacity: 0, x: fromLeft ? -30 : 30 }}
+                          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: fromLeft ? -30 : 30 }}
+                          transition={{ duration: 0.65, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                          whileHover={{ y: -4, transition: { duration: 0.25 } }}
+                        >
+                          <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 h-full flex flex-col">
+                            <div className="flex gap-1">
+                              {[...Array(5)].map((_, j) => <Star key={j} className="h-4 w-4 fill-primary text-primary" />)}
                             </div>
-                            <p className="font-display font-semibold">{t.name}</p>
+                            {t.content && <p className="text-ws-text-label leading-relaxed flex-1">"{t.content}"</p>}
+                            <div className="flex items-center gap-3 pt-4 border-t border-ws-border">
+                              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <User className="h-5 w-5 text-primary" />
+                              </div>
+                              <p className="font-display font-semibold">{t.name}</p>
+                            </div>
                           </div>
-                        </div>
-                      </AnimatedSection>
-                    ))}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               </section>
@@ -536,22 +509,31 @@ export default function LandingPage() {
             {videoItems.length > 0 && (
               <section id="video-testimonials" className="py-28 px-4 sm:px-6 lg:px-8 bg-ws-card-alt">
                 <div className="max-w-7xl mx-auto">
-                  <AnimatedSection className="text-center mb-16">
-                    <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Video Stories</p>
-                    <h2 className="text-4xl sm:text-5xl font-bold font-display">Hear From Our Members</h2>
-                  </AnimatedSection>
-                  <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                    {videoItems.map((t, i) => (
-                      <AnimatedSection key={i} delay={i * 0.1} className="min-w-[320px] max-w-[400px] snap-center flex-shrink-0">
-                        <div className="rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/30 transition-colors duration-300">
-                          <VideoEmbed url={t.video_url!} />
-                          <div className="p-5 space-y-2">
-                            <p className="font-display font-semibold">{t.name}</p>
-                            {t.content && <p className="text-sm text-ws-text-muted">{t.content}</p>}
+                  <SectionHeader tag="Video Stories" title="Hear From Our Members" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {videoItems.map((t, i) => {
+                      const ref = useRef(null);
+                      const inView = useInView(ref, { margin: '-60px', amount: 0.2 });
+                      const fromLeft = i % 2 === 0;
+                      return (
+                        <motion.div
+                          key={i}
+                          ref={ref}
+                          initial={{ opacity: 0, x: fromLeft ? -30 : 30 }}
+                          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: fromLeft ? -30 : 30 }}
+                          transition={{ duration: 0.65, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                          whileHover={{ y: -4, transition: { duration: 0.25 } }}
+                        >
+                          <div className="rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
+                            <VideoEmbed url={t.video_url!} />
+                            <div className="p-5 space-y-2">
+                              <p className="font-display font-semibold">{t.name}</p>
+                              {t.content && <p className="text-sm text-ws-text-muted">{t.content}</p>}
+                            </div>
                           </div>
-                        </div>
-                      </AnimatedSection>
-                    ))}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               </section>
@@ -564,29 +546,23 @@ export default function LandingPage() {
       {data?.gallery && (galleryContent.items?.length ?? 0) > 0 && (
         <section id="gallery" className="py-28 px-4 sm:px-6 lg:px-8 bg-ws-card-alt">
           <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Our Space</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{galleryContent.title || 'Gallery'}</h2>
-            </AnimatedSection>
+            <SectionHeader tag="Our Space" title={galleryContent.title || 'Gallery'} />
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {galleryContent.items.slice(0, 6).map((g, i) => {
                 const url = (g as any).url || (g as any).image_url || '';
                 const type = (g as any).type || 'image';
                 return (
-                  <AnimatedSection key={i} delay={i * 0.05}>
-                    <div className="relative rounded-xl overflow-hidden group cursor-pointer aspect-square">
-                      {type === 'video' ? (
-                        <div className="w-full h-full bg-ws-border-dim flex items-center justify-center">
-                          <Play className="h-12 w-12 text-primary/50" />
-                        </div>
-                      ) : (
-                        <img src={url} alt={g.caption || 'Gallery'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300 flex items-end">
-                        {g.caption && <p className="p-4 text-sm font-medium opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">{g.caption}</p>}
-                      </div>
-                    </div>
-                  </AnimatedSection>
+                  <PremiumCard
+                    key={i}
+                    index={i}
+                    imageUrl={type === 'image' ? url : undefined}
+                    fallbackType={type === 'video' ? 'video' : 'gallery'}
+                    aspectRatio="aspect-square"
+                    imageGradient={false}
+                    overlay={type === 'video' ? <Play className="h-12 w-12 text-primary/60" /> : undefined}
+                  >
+                    {g.caption && <p className="text-xs text-ws-text-subtle truncate">{g.caption}</p>}
+                  </PremiumCard>
                 );
               })}
             </div>
