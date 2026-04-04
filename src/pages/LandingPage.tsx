@@ -12,7 +12,7 @@ import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
   MapPin, Mail, Clock,
 } from 'lucide-react';
-import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
+import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, StatsContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import OrbitAnimation from '@/components/OrbitAnimation';
 import { Lightbox } from '@/components/Lightbox';
