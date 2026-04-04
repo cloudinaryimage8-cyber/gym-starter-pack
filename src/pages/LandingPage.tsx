@@ -474,34 +474,22 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto">
                   <SectionHeader tag="Success Stories" title={testimonialsContent.title || 'What Our Members Say'} subtitle={testimonialsContent.subtitle} />
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {textItems.map((t, i) => {
-                      const ref = useRef(null);
-                      const inView = useInView(ref, { margin: '-60px', amount: 0.2 });
-                      const fromLeft = i % 2 === 0;
-                      return (
-                        <motion.div
-                          key={i}
-                          ref={ref}
-                          initial={{ opacity: 0, x: fromLeft ? -30 : 30 }}
-                          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: fromLeft ? -30 : 30 }}
-                          transition={{ duration: 0.65, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-                        >
-                          <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 h-full flex flex-col">
-                            <div className="flex gap-1">
-                              {[...Array(5)].map((_, j) => <Star key={j} className="h-4 w-4 fill-primary text-primary" />)}
-                            </div>
-                            {t.content && <p className="text-ws-text-label leading-relaxed flex-1">"{t.content}"</p>}
-                            <div className="flex items-center gap-3 pt-4 border-t border-ws-border">
-                              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                                <User className="h-5 w-5 text-primary" />
-                              </div>
-                              <p className="font-display font-semibold">{t.name}</p>
-                            </div>
+                    {textItems.map((t, i) => (
+                      <SlideCard key={i} index={i}>
+                        <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 h-full flex flex-col">
+                          <div className="flex gap-1">
+                            {[...Array(5)].map((_, j) => <Star key={j} className="h-4 w-4 fill-primary text-primary" />)}
                           </div>
-                        </motion.div>
-                      );
-                    })}
+                          {t.content && <p className="text-ws-text-label leading-relaxed flex-1">"{t.content}"</p>}
+                          <div className="flex items-center gap-3 pt-4 border-t border-ws-border">
+                            <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                              <User className="h-5 w-5 text-primary" />
+                            </div>
+                            <p className="font-display font-semibold">{t.name}</p>
+                          </div>
+                        </div>
+                      </SlideCard>
+                    ))}
                   </div>
                 </div>
               </section>
@@ -511,29 +499,17 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto">
                   <SectionHeader tag="Video Stories" title="Hear From Our Members" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {videoItems.map((t, i) => {
-                      const ref = useRef(null);
-                      const inView = useInView(ref, { margin: '-60px', amount: 0.2 });
-                      const fromLeft = i % 2 === 0;
-                      return (
-                        <motion.div
-                          key={i}
-                          ref={ref}
-                          initial={{ opacity: 0, x: fromLeft ? -30 : 30 }}
-                          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: fromLeft ? -30 : 30 }}
-                          transition={{ duration: 0.65, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-                        >
-                          <div className="rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
-                            <VideoEmbed url={t.video_url!} />
-                            <div className="p-5 space-y-2">
-                              <p className="font-display font-semibold">{t.name}</p>
-                              {t.content && <p className="text-sm text-ws-text-muted">{t.content}</p>}
-                            </div>
+                    {videoItems.map((t, i) => (
+                      <SlideCard key={i} index={i}>
+                        <div className="rounded-2xl bg-ws-card border border-ws-border overflow-hidden hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
+                          <VideoEmbed url={t.video_url!} />
+                          <div className="p-5 space-y-2">
+                            <p className="font-display font-semibold">{t.name}</p>
+                            {t.content && <p className="text-sm text-ws-text-muted">{t.content}</p>}
                           </div>
-                        </motion.div>
-                      );
-                    })}
+                        </div>
+                      </SlideCard>
+                    ))}
                   </div>
                 </div>
               </section>
