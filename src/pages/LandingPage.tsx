@@ -134,6 +134,13 @@ export default function LandingPage() {
   const orbitEnabled = data?.orbit?.is_enabled !== false;
   const navbarContent = (data?.navbar?.content ?? {}) as NavbarContent;
   const loaderContent = (data?.loader?.content ?? {}) as LoaderContent;
+  const statsContent = (data?.stats?.content ?? { items: [
+    { icon_url: '', value: '500+', label: 'Happy Members' },
+    { icon_url: '', value: '200+', label: 'Transformations' },
+    { icon_url: '', value: '5+', label: 'Years Experience' },
+    { icon_url: '', value: '4.8', label: 'Google Rating' },
+  ] }) as StatsContent;
+  const statsEnabled = data?.stats?.is_enabled !== false;
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
