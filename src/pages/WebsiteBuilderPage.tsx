@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   useWebsiteContent, ALL_SECTION_KEYS, SECTION_DEFAULTS, SectionKey,
   HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
-  ServicesContent, EquipmentContent, ReviewsContent, BranchesContent,
+  ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, StatsContent, StatItem,
   TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem, OrbitContent, OrbitIconItem, NavbarContent, LoaderContent,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
