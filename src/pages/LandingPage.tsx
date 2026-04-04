@@ -112,6 +112,7 @@ export default function LandingPage() {
         orbit: getSection('orbit'),
         navbar: getSection('navbar'),
         loader: getSection('loader'),
+        stats: getSection('stats'),
       };
     },
   });
