@@ -394,6 +394,70 @@ export default function WebsiteBuilderPage() {
               </div>
             </SectionCard>
           </TabsContent>
+
+          {/* ─── STATS ─── */}
+          <TabsContent value="stats">
+            <SectionCard sectionKey="stats" toggles={toggles} setToggles={setToggles} onSave={() => save('stats')} saving={upsertSection.isPending}>
+              <p className="text-sm text-muted-foreground">Configure the social proof / stats section shown on your website. Min 2, max 6 items.</p>
+              <div className="space-y-3">
+                {(drafts.stats?.items ?? []).map((item: StatItem, i: number) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <Input
+                        value={item.value}
+                        onChange={e => {
+                          const items = [...(drafts.stats?.items ?? [])];
+                          items[i] = { ...items[i], value: e.target.value };
+                          setDrafts(prev => ({ ...prev, stats: { ...prev.stats, items } }));
+                        }}
+                        placeholder="500+"
+                      />
+                      <Input
+                        value={item.label}
+                        onChange={e => {
+                          const items = [...(drafts.stats?.items ?? [])];
+                          items[i] = { ...items[i], label: e.target.value };
+                          setDrafts(prev => ({ ...prev, stats: { ...prev.stats, items } }));
+                        }}
+                        placeholder="Happy Members"
+                      />
+                      <Input
+                        value={item.icon_url ?? ''}
+                        onChange={e => {
+                          const items = [...(drafts.stats?.items ?? [])];
+                          items[i] = { ...items[i], icon_url: e.target.value };
+                          setDrafts(prev => ({ ...prev, stats: { ...prev.stats, items } }));
+                        }}
+                        placeholder="Icon URL (optional)"
+                      />
+                    </div>
+                    <Button
+                      variant="ghost" size="icon"
+                      disabled={(drafts.stats?.items ?? []).length <= 2}
+                      onClick={() => {
+                        const items = [...(drafts.stats?.items ?? [])];
+                        items.splice(i, 1);
+                        setDrafts(prev => ({ ...prev, stats: { ...prev.stats, items } }));
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {(drafts.stats?.items ?? []).length < 6 && (
+                <Button
+                  size="sm" variant="outline"
+                  onClick={() => {
+                    const items = [...(drafts.stats?.items ?? []), { icon_url: '', value: '', label: '' }];
+                    setDrafts(prev => ({ ...prev, stats: { ...prev.stats, items } }));
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />Add Stat
+                </Button>
+              )}
+            </SectionCard>
+          </TabsContent>
         </Tabs>
       )}
     </div>
