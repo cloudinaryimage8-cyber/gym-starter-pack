@@ -3,9 +3,17 @@ import { useToast } from '@/hooks/use-toast';
 import * as ds from '@/services/dataService';
 
 // ─── Section content types ───
+export interface SocialProofConfig {
+  enabled?: boolean;
+  member_count_text?: string;
+  profile_images?: string[];
+  rating_value?: string;
+  rating_text?: string;
+}
 export interface HeroContent {
   title?: string; subtitle?: string; image_url?: string; video_url?: string;
   mobile_image_url?: string; mobile_video_url?: string; cta_text?: string;
+  social_proof?: SocialProofConfig;
 }
 export interface PricingContent { title?: string; subtitle?: string; cta_note?: string; }
 export interface TrainerItem { name: string; specialization?: string; image_url?: string; }
@@ -23,8 +31,12 @@ export interface ReviewItem { name: string; rating: number; text?: string; }
 export interface ReviewsContent { title?: string; subtitle?: string; items: ReviewItem[]; }
 export interface BranchItem { name: string; location?: string; contact?: string; }
 export interface BranchesContent { title?: string; subtitle?: string; items: BranchItem[]; }
+export interface OrbitIconItem { url: string; label: string; }
+export interface OrbitContent { person_url: string; icons: OrbitIconItem[]; }
+export interface NavbarContent { logo_url?: string; brand_name?: string; cta_text?: string; cta_link?: string; show_dashboard_link?: boolean; }
+export interface LoaderContent { enabled?: boolean; text?: string; icon_url?: string; duration?: number; }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches';
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader';
 
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: SectionKey; is_enabled: boolean;
@@ -41,9 +53,12 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
   equipment: { label: 'Equipment', defaultContent: { title: 'World-Class Equipment', subtitle: 'Train with the best machines and gear.', items: [] } as EquipmentContent },
   reviews: { label: 'Reviews', defaultContent: { title: 'Google Reviews', subtitle: 'See what our members say about us.', items: [] } as ReviewsContent },
   branches: { label: 'Branches', defaultContent: { title: 'Our Branches', subtitle: 'Find a location near you.', items: [] } as BranchesContent },
+  orbit: { label: 'Orbit Animation', defaultContent: { person_url: '', icons: [{ url: '', label: 'Strength Training' }, { url: '', label: 'Meditation' }, { url: '', label: 'Dance Fitness' }, { url: '', label: 'Nutrition' }, { url: '', label: 'Cardio Health' }] } as OrbitContent },
+  navbar: { label: 'Navbar', defaultContent: { logo_url: '', brand_name: '', cta_text: 'Join Now', cta_link: 'lead-form', show_dashboard_link: true } as NavbarContent },
+  loader: { label: 'Page Loader', defaultContent: { enabled: true, text: '', icon_url: '', duration: 3 } as LoaderContent },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader'];
 
 export function useWebsiteContent() {
   const { toast } = useToast();
