@@ -58,9 +58,15 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
   orbit: { label: 'Orbit Animation', defaultContent: { person_url: '', icons: [{ url: '', label: 'Strength Training' }, { url: '', label: 'Meditation' }, { url: '', label: 'Dance Fitness' }, { url: '', label: 'Nutrition' }, { url: '', label: 'Cardio Health' }] } as OrbitContent },
   navbar: { label: 'Navbar', defaultContent: { logo_url: '', brand_name: '', cta_text: 'Join Now', cta_link: 'lead-form', show_dashboard_link: true } as NavbarContent },
   loader: { label: 'Page Loader', defaultContent: { enabled: true, text: '', icon_url: '', duration: 3 } as LoaderContent },
+  stats: { label: 'Stats', defaultContent: { title: '', items: [
+    { icon_url: '', value: '500+', label: 'Happy Members' },
+    { icon_url: '', value: '200+', label: 'Transformations' },
+    { icon_url: '', value: '5+', label: 'Years Experience' },
+    { icon_url: '', value: '4.8', label: 'Google Rating' },
+  ] } as StatsContent },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader', 'stats'];
 
 export function useWebsiteContent() {
   const { toast } = useToast();
