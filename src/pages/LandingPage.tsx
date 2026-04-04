@@ -89,7 +89,7 @@ function SlideCard({ children, index }: { children: React.ReactNode; index: numb
   );
 }
 
-
+function ParallaxSection({ children, className = '', speed = 0.15 }: { children: React.ReactNode; className?: string; speed?: number }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [speed * 100, -speed * 100]);
