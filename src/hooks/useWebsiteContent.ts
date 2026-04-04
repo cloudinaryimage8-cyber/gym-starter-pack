@@ -35,8 +35,10 @@ export interface OrbitIconItem { url: string; label: string; }
 export interface OrbitContent { person_url: string; icons: OrbitIconItem[]; }
 export interface NavbarContent { logo_url?: string; brand_name?: string; cta_text?: string; cta_link?: string; show_dashboard_link?: boolean; }
 export interface LoaderContent { enabled?: boolean; text?: string; icon_url?: string; duration?: number; }
+export interface StatItem { icon_url?: string; value: string; label: string; }
+export interface StatsContent { title?: string; items: StatItem[]; }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader';
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats';
 
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: SectionKey; is_enabled: boolean;
