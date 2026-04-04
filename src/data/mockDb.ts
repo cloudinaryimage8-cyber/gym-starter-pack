@@ -332,6 +332,18 @@ export function createSeedData(): MockDb {
       },
       created_at: nowIso, updated_at: nowIso,
     },
+    {
+      id: genId(), user_id: DEMO_USER_ID, section_key: 'stats', is_enabled: true,
+      content: {
+        items: [
+          { icon_url: '', value: '500+', label: 'Happy Members' },
+          { icon_url: '', value: '200+', label: 'Transformations' },
+          { icon_url: '', value: '5+', label: 'Years Experience' },
+          { icon_url: '', value: '4.8', label: 'Google Rating' },
+        ],
+      },
+      created_at: nowIso, updated_at: nowIso,
+    },
   ];
 
   // Gym settings
