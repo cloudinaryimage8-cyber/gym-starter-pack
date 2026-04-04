@@ -71,7 +71,25 @@ function AnimatedSection({ children, className = '', delay = 0, variant = 'fade-
   );
 }
 
-function ParallaxSection({ children, className = '', speed = 0.15 }: { children: React.ReactNode; className?: string; speed?: number }) {
+function SlideCard({ children, index }: { children: React.ReactNode; index: number }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: '-60px', amount: 0.2 });
+  const fromLeft = index % 2 === 0;
+  const xOffset = fromLeft ? -30 : 30;
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, x: xOffset }}
+      animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: xOffset }}
+      transition={{ duration: 0.65, delay: (index % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4, transition: { duration: 0.25 } }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [speed * 100, -speed * 100]);
