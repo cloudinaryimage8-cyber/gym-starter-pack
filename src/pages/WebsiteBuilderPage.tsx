@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, ExternalLink, Plus, Trash2, Film, Image, Dumbbell, Sparkles, Star, MapPin, Phone, Navigation, Loader2 } from 'lucide-react';
+import { Save, ExternalLink, Plus, Trash2, Film, Image, Dumbbell, Sparkles, Star, MapPin, Phone, Navigation, Loader2, BarChart3 } from 'lucide-react';
 
 export default function WebsiteBuilderPage() {
   const { sections, isLoading, getSectionContent, isSectionEnabled, upsertSection } = useWebsiteContent();
