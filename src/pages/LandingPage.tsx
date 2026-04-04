@@ -12,7 +12,7 @@ import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
   MapPin, Mail, Clock,
 } from 'lucide-react';
-import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
+import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, StatsContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import OrbitAnimation from '@/components/OrbitAnimation';
 import { Lightbox } from '@/components/Lightbox';
@@ -112,6 +112,7 @@ export default function LandingPage() {
         orbit: getSection('orbit'),
         navbar: getSection('navbar'),
         loader: getSection('loader'),
+        stats: getSection('stats'),
       };
     },
   });
@@ -133,6 +134,13 @@ export default function LandingPage() {
   const orbitEnabled = data?.orbit?.is_enabled !== false;
   const navbarContent = (data?.navbar?.content ?? {}) as NavbarContent;
   const loaderContent = (data?.loader?.content ?? {}) as LoaderContent;
+  const statsContent = (data?.stats?.content ?? { items: [
+    { icon_url: '', value: '500+', label: 'Happy Members' },
+    { icon_url: '', value: '200+', label: 'Transformations' },
+    { icon_url: '', value: '5+', label: 'Years Experience' },
+    { icon_url: '', value: '4.8', label: 'Google Rating' },
+  ] }) as StatsContent;
+  const statsEnabled = data?.stats?.is_enabled !== false;
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -300,27 +308,43 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-website-bg to-transparent" />
       </section>
 
-      {/* ─── SOCIAL PROOF ─── */}
-      <section className="relative -mt-1 border-y border-ws-border-dim bg-ws-social-proof">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Users, value: '500+', label: 'Active Members' },
-              { icon: Award, value: '200+', label: 'Transformations' },
-              { icon: Calendar, value: '10+', label: 'Years Experience' },
-              { icon: Star, value: '4.9★', label: 'Google Rating' },
-            ].map((stat, i) => (
-              <AnimatedSection key={stat.label} delay={i * 0.1} className="text-center space-y-3">
-                <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-primary/10 mx-auto">
-                  <stat.icon className="h-5 w-5 text-primary" />
-                </div>
-                <p className="text-4xl font-bold font-display">{stat.value}</p>
-                <p className="text-sm text-ws-text-dim font-medium uppercase tracking-wider">{stat.label}</p>
-              </AnimatedSection>
-            ))}
+      {/* ─── STATS / SOCIAL PROOF ─── */}
+      {statsEnabled && (statsContent.items?.length ?? 0) > 0 && (
+        <section className="relative -mt-1 border-y border-ws-border-dim bg-ws-social-proof">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+              {statsContent.items.map((stat, i) => (
+                <motion.div
+                  key={stat.label + i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                  className="group text-center rounded-2xl bg-secondary/40 backdrop-blur-sm border border-ws-border-dim p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/15 mx-auto mb-4">
+                    {stat.icon_url ? (
+                      <img src={stat.icon_url} alt={stat.label} className="h-6 w-6 object-contain" loading="lazy" />
+                    ) : (
+                      (() => {
+                        const label = stat.label.toLowerCase();
+                        if (label.includes('member')) return <Users className="h-5 w-5 text-accent-foreground" />;
+                        if (label.includes('transform')) return <Award className="h-5 w-5 text-accent-foreground" />;
+                        if (label.includes('experience') || label.includes('year')) return <Calendar className="h-5 w-5 text-accent-foreground" />;
+                        if (label.includes('rating') || label.includes('star')) return <Star className="h-5 w-5 text-accent-foreground fill-accent-foreground" />;
+                        return <Award className="h-5 w-5 text-accent-foreground" />;
+                      })()
+                    )}
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-bold font-display">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-ws-text-dim font-medium uppercase tracking-wider mt-2">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ─── SERVICES ─── */}
       {data?.services && (servicesContent.items?.length ?? 0) > 0 && (
