@@ -491,12 +491,12 @@ export default function MembersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead><button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => toggleSort('name')}>Name <ArrowUpDown className="h-3 w-3 opacity-50" /></button></TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead><button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => toggleSort('plan')}>Plan <ArrowUpDown className="h-3 w-3 opacity-50" /></button></TableHead>
+                  <TableHead><button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => toggleSort('status')}>Status <ArrowUpDown className="h-3 w-3 opacity-50" /></button></TableHead>
                   <TableHead>Payment</TableHead>
-                  <TableHead>Expiry Date</TableHead>
+                  <TableHead><button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => toggleSort('expiry_date')}>Expiry Date <ArrowUpDown className="h-3 w-3 opacity-50" /></button></TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
