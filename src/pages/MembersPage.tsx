@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useMembers, useCreateMember, useUpdateMember, useDeleteMember, Member } from '@/hooks/useMembers';
 import { usePlans } from '@/hooks/usePlans';
@@ -13,10 +13,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw, Bell, CreditCard } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw, Bell, CreditCard, Search, BarChart3, ArrowUpDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
+
+type SortKey = 'name' | 'start_date' | 'expiry_date' | 'plan' | 'status';
+type SortDir = 'asc' | 'desc';
+const PAGE_SIZE = 15;
+
+function useDebounced<T>(value: T, delay = 300): T {
+  const [v, setV] = useState(value);
+  useEffect(() => { const id = setTimeout(() => setV(value), delay); return () => clearTimeout(id); }, [value, delay]);
+  return v;
+}
 
 function getExpiryInfo(expiryDate: string) {
   const today = new Date();
