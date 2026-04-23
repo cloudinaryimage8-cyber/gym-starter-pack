@@ -365,7 +365,10 @@ export default function MembersPage() {
             )}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={() => navigate('/app/members/dashboard')}>
+            <BarChart3 className="h-4 w-4 mr-2" /> Members Dashboard
+          </Button>
           {/* Quick Add */}
           <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
             <DialogTrigger asChild>
