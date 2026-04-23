@@ -416,6 +416,60 @@ export default function MembersPage() {
         </div>
       </div>
 
+      {/* Controls: search + filters */}
+      <Card>
+        <CardContent className="p-4 flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              placeholder="Search by name, phone, or plan…"
+              className="pl-9"
+            />
+          </div>
+
+          <Select value={statusFilter} onValueChange={(v) => updateParam('status', v)}>
+            <SelectTrigger className="w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="expired">Expired</SelectItem>
+              <SelectItem value="overdue">Overdue</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={planFilter} onValueChange={(v) => updateParam('plan', v)}>
+            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Plan category" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All plans</SelectItem>
+              {planCategories.map(c => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={expiryFilter} onValueChange={(v) => updateParam('expiry', v)}>
+            <SelectTrigger className="w-[170px]"><SelectValue placeholder="Expiry" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any expiry</SelectItem>
+              <SelectItem value="7days">Expiring in 7 days</SelectItem>
+              <SelectItem value="30days">Expiring in 30 days</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+              <X className="h-4 w-4 mr-1" /> Clear
+            </Button>
+          )}
+
+          <div className="ml-auto text-xs text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{processed.length}</span> of {members?.length ?? 0}
+          </div>
+        </CardContent>
+      </Card>
+
       {(!plans || plans.length === 0) && !isLoading && (
         <Card>
           <CardContent className="p-6 text-center">
