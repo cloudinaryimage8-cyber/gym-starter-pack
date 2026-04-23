@@ -12,6 +12,7 @@ import PlansPage from "./pages/PlansPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import PaymentsDashboardPage from "./pages/PaymentsDashboardPage";
 import ExpensesPage from "./pages/ExpensesPage";
+import ExpensesDashboardPage from "./pages/ExpensesDashboardPage";
 import LeadsPage from "./pages/LeadsPage";
 import LeadsDashboardPage from "./pages/LeadsDashboardPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
@@ -46,6 +47,7 @@ function AppLayout() {
         <Route path="leads" element={<LeadsPage />} />
         <Route path="leads/dashboard" element={<LeadsDashboardPage />} />
         <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="expenses/dashboard" element={<ExpensesDashboardPage />} />
         <Route path="website" element={<WebsiteBuilderPage />} />
         <Route path="contact" element={<ContactSettingsPage />} />
         <Route path="settings" element={<BrandingSettingsPage />} />
