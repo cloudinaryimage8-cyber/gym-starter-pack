@@ -501,14 +501,16 @@ export default function MembersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[...members]
-                  .sort((a, b) => {
-                    const pa = getPaymentStatus(a, payments ?? []);
-                    const pb = getPaymentStatus(b, payments ?? []);
-                    const order = { overdue: 0, pending: 1, paid: 2 };
-                    return order[pa] - order[pb];
-                  })
-                  .map(member => {
+                {pagedMembers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-12">
+                      No members match your filters.
+                      {hasActiveFilters && (
+                        <Button variant="link" size="sm" onClick={clearAllFilters} className="ml-1">Clear filters</Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ) : pagedMembers.map(member => {
                   const expiry = getExpiryInfo(member.expiry_date);
                   const payStatus = getPaymentStatus(member, payments ?? []);
                   return (
