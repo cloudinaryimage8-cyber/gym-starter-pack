@@ -618,7 +618,43 @@ export default function MembersPage() {
                 })}
               </TableBody>
             </Table>
-          ) : (
+          ) : null}
+          {members && members.length > 0 && totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border-t">
+              <span className="text-xs text-muted-foreground">
+                Page {safePage} of {totalPages} · {processed.length} result{processed.length === 1 ? '' : 's'}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="sm" onClick={() => updateParam('page', String(Math.max(1, safePage - 1)))} disabled={safePage === 1}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(n => Math.abs(n - safePage) <= 2 || n === 1 || n === totalPages)
+                  .reduce<(number | 'gap')[]>((acc, n, idx, arr) => {
+                    if (idx > 0 && n - (arr[idx - 1] as number) > 1) acc.push('gap');
+                    acc.push(n);
+                    return acc;
+                  }, [])
+                  .map((n, idx) => n === 'gap'
+                    ? <span key={`gap-${idx}`} className="px-2 text-muted-foreground">…</span>
+                    : (
+                      <Button
+                        key={n}
+                        variant={n === safePage ? 'default' : 'outline'}
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => updateParam('page', String(n))}
+                      >
+                        {n}
+                      </Button>
+                    ))}
+                <Button variant="outline" size="sm" onClick={() => updateParam('page', String(Math.min(totalPages, safePage + 1)))} disabled={safePage === totalPages}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+          {(!members || members.length === 0) && !isLoading && (
             <div className="flex flex-col items-center justify-center p-16 text-center">
               <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                 <Users className="h-8 w-8 text-primary" />
