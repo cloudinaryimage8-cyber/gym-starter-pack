@@ -194,6 +194,7 @@ export default function MembersPage() {
   const deleteMember = useDeleteMember();
   const createPayment = useCreatePayment();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | undefined>();
@@ -202,7 +203,107 @@ export default function MembersPage() {
   const [collectAmount, setCollectAmount] = useState('');
   const [collectMethod, setCollectMethod] = useState('cash');
 
-  
+  // ─── URL-driven state ───
+  const statusFilter = (searchParams.get('status') ?? 'all') as 'all' | 'active' | 'expired' | 'overdue';
+  const planFilter = searchParams.get('plan') ?? 'all';
+  const expiryFilter = (searchParams.get('expiry') ?? 'all') as 'all' | '7days' | '30days';
+  const sortKey = (searchParams.get('sort') ?? 'expiry_date') as SortKey;
+  const sortDir = (searchParams.get('dir') ?? 'asc') as SortDir;
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  const urlSearch = searchParams.get('q') ?? '';
+  const [searchInput, setSearchInput] = useState(urlSearch);
+  const debouncedSearch = useDebounced(searchInput, 250);
+
+  useEffect(() => {
+    if (debouncedSearch === urlSearch) return;
+    const next = new URLSearchParams(searchParams);
+    if (debouncedSearch) next.set('q', debouncedSearch); else next.delete('q');
+    next.delete('page');
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
+  const updateParam = (key: string, value: string | null) => {
+    const next = new URLSearchParams(searchParams);
+    if (value == null || value === '' || value === 'all') next.delete(key); else next.set(key, value);
+    if (key !== 'page') next.delete('page');
+    setSearchParams(next, { replace: true });
+  };
+
+  const planCategories = useMemo(() => {
+    const set = new Set<string>();
+    plans?.forEach(p => { if (p.category) set.add(p.category); });
+    return Array.from(set).sort();
+  }, [plans]);
+
+  const processed = useMemo(() => {
+    if (!members) return [] as Member[];
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().slice(0, 10);
+    const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
+    const in7Str = in7.toISOString().slice(0, 10);
+    const in30 = new Date(today); in30.setDate(in30.getDate() + 30);
+    const in30Str = in30.toISOString().slice(0, 10);
+    const q = debouncedSearch.trim().toLowerCase();
+
+    let list = members.filter(m => {
+      if (statusFilter === 'active' && m.expiry_date < todayStr) return false;
+      if (statusFilter === 'expired' && m.expiry_date >= todayStr) return false;
+      if (statusFilter === 'overdue') {
+        if (getPaymentStatus(m, payments ?? []) !== 'overdue') return false;
+      }
+      if (planFilter !== 'all') {
+        const planCat = plans?.find(p => p.id === m.plan_id)?.category ?? '';
+        if (planCat.toLowerCase() !== planFilter.toLowerCase()) return false;
+      }
+      if (expiryFilter === '7days' && !(m.expiry_date >= todayStr && m.expiry_date <= in7Str)) return false;
+      if (expiryFilter === '30days' && !(m.expiry_date >= todayStr && m.expiry_date <= in30Str)) return false;
+      if (q) {
+        const planName = m.plans?.name?.toLowerCase() ?? '';
+        if (!m.name.toLowerCase().includes(q) && !m.phone.toLowerCase().includes(q) && !planName.includes(q)) return false;
+      }
+      return true;
+    });
+
+    list = [...list].sort((a, b) => {
+      let av: string | number = '';
+      let bv: string | number = '';
+      switch (sortKey) {
+        case 'name': av = a.name.toLowerCase(); bv = b.name.toLowerCase(); break;
+        case 'start_date': av = a.start_date; bv = b.start_date; break;
+        case 'expiry_date': av = a.expiry_date; bv = b.expiry_date; break;
+        case 'plan': av = a.plans?.name?.toLowerCase() ?? ''; bv = b.plans?.name?.toLowerCase() ?? ''; break;
+        case 'status':
+          av = a.expiry_date < todayStr ? 1 : 0;
+          bv = b.expiry_date < todayStr ? 1 : 0;
+          break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [members, payments, plans, statusFilter, planFilter, expiryFilter, sortKey, sortDir, debouncedSearch]);
+
+  const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pagedMembers = processed.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  const toggleSort = (key: SortKey) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('sort', key);
+    next.set('dir', sortKey === key ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc');
+    next.delete('page');
+    setSearchParams(next, { replace: true });
+  };
+
+  const hasActiveFilters = statusFilter !== 'all' || planFilter !== 'all' || expiryFilter !== 'all' || debouncedSearch.length > 0;
+  const clearAllFilters = () => {
+    setSearchInput('');
+    setSearchParams(new URLSearchParams(), { replace: true });
+  };
+
 
   const handleSubmit = async (data: { name: string; phone: string; plan_id: string; start_date: string; expiry_date: string }) => {
     try {
