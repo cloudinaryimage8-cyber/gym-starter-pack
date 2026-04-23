@@ -7,6 +7,7 @@ import { BrandingProvider } from "./components/BrandingProvider";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import MembersPage from "./pages/MembersPage";
+import MembersDashboardPage from "./pages/MembersDashboardPage";
 import PlansPage from "./pages/PlansPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import PaymentsDashboardPage from "./pages/PaymentsDashboardPage";
@@ -37,6 +38,7 @@ function AppLayout() {
         <Route index element={<PlaceholderPage />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="members" element={<MembersPage />} />
+        <Route path="members/dashboard" element={<MembersDashboardPage />} />
         <Route path="members/:memberId" element={<MemberProfilePage />} />
         <Route path="plans" element={<PlansPage />} />
         <Route path="payments" element={<PaymentsPage />} />
