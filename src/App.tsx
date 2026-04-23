@@ -9,8 +9,10 @@ import Dashboard from "./pages/Dashboard";
 import MembersPage from "./pages/MembersPage";
 import PlansPage from "./pages/PlansPage";
 import PaymentsPage from "./pages/PaymentsPage";
+import PaymentsDashboardPage from "./pages/PaymentsDashboardPage";
 import ExpensesPage from "./pages/ExpensesPage";
 import LeadsPage from "./pages/LeadsPage";
+import LeadsDashboardPage from "./pages/LeadsDashboardPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import BrandingSettingsPage from "./pages/BrandingSettingsPage";
@@ -18,28 +20,35 @@ import ContactSettingsPage from "./pages/ContactSettingsPage";
 import NotFound from "./pages/NotFound";
 import GalleryPage from "./pages/GalleryPage";
 import MemberProfilePage from "./pages/MemberProfilePage";
+import PublicPlansPage from "./pages/PublicPlansPage";
+import PublicBranchesPage from "./pages/PublicBranchesPage";
+import PublicServicesPage from "./pages/PublicServicesPage";
+import PublicTrainersPage from "./pages/PublicTrainersPage";
+import PublicEquipmentPage from "./pages/PublicEquipmentPage";
+import PublicTestimonialsPage from "./pages/PublicTestimonialsPage";
+import PublicProductsPage from "./pages/PublicProductsPage";
 
 const queryClient = new QueryClient();
 
 function AppLayout() {
   return (
-    <BrandingProvider>
-      <DashboardLayout>
-        <Routes>
-          <Route index element={<PlaceholderPage />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="members" element={<MembersPage />} />
-          <Route path="members/:memberId" element={<MemberProfilePage />} />
-          <Route path="plans" element={<PlansPage />} />
-          <Route path="payments" element={<PaymentsPage />} />
-          <Route path="leads" element={<LeadsPage />} />
-          <Route path="expenses" element={<ExpensesPage />} />
-          <Route path="website" element={<WebsiteBuilderPage />} />
-          <Route path="contact" element={<ContactSettingsPage />} />
-          <Route path="settings" element={<BrandingSettingsPage />} />
-        </Routes>
-      </DashboardLayout>
-    </BrandingProvider>
+    <DashboardLayout>
+      <Routes>
+        <Route index element={<PlaceholderPage />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="members" element={<MembersPage />} />
+        <Route path="members/:memberId" element={<MemberProfilePage />} />
+        <Route path="plans" element={<PlansPage />} />
+        <Route path="payments" element={<PaymentsPage />} />
+        <Route path="payments/dashboard" element={<PaymentsDashboardPage />} />
+        <Route path="leads" element={<LeadsPage />} />
+        <Route path="leads/dashboard" element={<LeadsDashboardPage />} />
+        <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="website" element={<WebsiteBuilderPage />} />
+        <Route path="contact" element={<ContactSettingsPage />} />
+        <Route path="settings" element={<BrandingSettingsPage />} />
+      </Routes>
+    </DashboardLayout>
   );
 }
 
@@ -48,12 +57,21 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/app/*" element={<AppLayout />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <BrandingProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/plans" element={<PublicPlansPage />} />
+            <Route path="/branches" element={<PublicBranchesPage />} />
+            <Route path="/services" element={<PublicServicesPage />} />
+            <Route path="/trainers" element={<PublicTrainersPage />} />
+            <Route path="/equipment" element={<PublicEquipmentPage />} />
+            <Route path="/testimonials" element={<PublicTestimonialsPage />} />
+            <Route path="/products" element={<PublicProductsPage />} />
+            <Route path="/app/*" element={<AppLayout />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrandingProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
