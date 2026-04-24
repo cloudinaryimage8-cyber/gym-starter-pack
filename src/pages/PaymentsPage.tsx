@@ -133,7 +133,7 @@ export default function PaymentsPage() {
     )
   );
 
-  const totalPendingAmount = [...(pendingPayments), ...(overduePayments)].reduce((sum, p) => sum + Number(p.amount), 0);
+
 
   return (
     <div className="space-y-6">
