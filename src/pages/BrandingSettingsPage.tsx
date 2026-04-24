@@ -353,70 +353,17 @@ if (!resolved.button_color) {
           </Button>
         </div>
 
-        {/* Live Preview */}
-        <Card className="sticky top-6 self-start">
-          <CardHeader><CardTitle className="flex items-center gap-2"><Eye className="h-4 w-4" /> Live Preview</CardTitle></CardHeader>
-          <CardContent>
-            <div className="rounded-xl overflow-hidden border border-border" style={{ background: hslToCss(primaryColor) }}>
-              {/* Preview Navbar */}
-              <div className="px-4 py-3 flex items-center justify-between" style={{ background: hslToCss(cardColor || secondaryColor), borderBottom: `1px solid hsl(${primaryColor.split(' ')[0]} 20% 20%)` }}>
-                <div className="flex items-center gap-2">
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="Logo" className="h-7 w-7 rounded object-cover" />
-                  ) : (
-                    <div className="h-7 w-7 rounded flex items-center justify-center" style={{ background: hslToCss(buttonColor || accentColor) }}>
-                      <Dumbbell className="h-3.5 w-3.5 text-white" />
-                    </div>
-                  )}
-                  <span className="text-sm font-bold text-white">{gymName || 'My Gym'}</span>
-                </div>
-                <div className="h-6 px-3 rounded text-[10px] font-medium flex items-center text-white" style={{ background: hslToCss(buttonColor || accentColor) }}>
-                  Join Now
-                </div>
-              </div>
-              {/* Preview Hero */}
-              <div className="px-6 py-10 text-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at 50% 0%, ${hslToCss(accentColor)}, transparent 70%)` }} />
-                <div className="relative z-10">
-                  <h3
-  className="text-lg font-bold mb-2"
-  style={{ color: hslToCss(headingColor) }}
->
-  Transform Your Body
-</h3>
-
-<p
-  className="text-xs mb-4"
-  style={{ color: hslToCss(descriptionColor) }}
->
-  Build discipline. Get results.
-</p>
-                  <div className="flex justify-center gap-2">
-                    <div className="h-7 px-4 rounded text-[10px] font-medium flex items-center text-white" style={{ background: hslToCss(buttonColor || accentColor) }}>
-                      Start Trial
-                    </div>
-                    <div className="h-7 px-4 rounded text-[10px] font-medium flex items-center border border-white/15 text-white">
-                      View Plans
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Preview Cards */}
-              <div className="px-4 pb-4 grid grid-cols-3 gap-2">
-                {['Basic', 'Standard', 'Premium'].map((plan, i) => (
-                  <div key={plan} className="rounded-lg p-3 text-center" style={{ background: hslToCss(cardColor || secondaryColor) }}>
-                    <p className="text-[10px] text-white/50">{plan}</p>
-                    <p className="text-sm font-bold text-white">₹{[999, 1999, 4999][i]}</p>
-                    <div className="mt-2 h-5 rounded text-[8px] font-medium flex items-center justify-center text-white"
-                      style={{ background: i === 1 ? hslToCss(accentColor) : `hsl(${primaryColor.split(' ')[0]} 20% 18%)` }}>
-                      {i === 1 ? 'Popular' : 'Select'}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Live Preview — full landing page in iframe with real-time theme sync */}
+        <LivePreview
+          primaryColor={primaryColor}
+          secondaryColor={secondaryColor}
+          accentColor={accentColor}
+          highlightColor={highlightColor}
+          cardColor={cardColor}
+          headingColor={headingColor}
+          descriptionColor={descriptionColor}
+          buttonColor={buttonColor}
+        />
       </div>
     </div>
   );
