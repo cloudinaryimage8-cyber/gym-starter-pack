@@ -181,41 +181,21 @@ export default function Dashboard() {
             <TabsContent value="today" className="space-y-6 mt-0">
               <AnalyticsKpis kpis={data.kpis} />
               <AnalyticsCharts data={data} variant="today" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <AnalyticsDataTable title="New Members" rows={data.members} columns={memberCols} pageSize={6} />
-                <AnalyticsDataTable title="Payments" rows={data.payments} columns={paymentCols} pageSize={6} />
-              </div>
-              <AnalyticsDataTable title="Leads" rows={data.leads} columns={leadCols} pageSize={6} />
             </TabsContent>
 
             <TabsContent value="weekly" className="space-y-6 mt-0">
               <AnalyticsKpis kpis={data.kpis} />
               <AnalyticsCharts data={data} variant="weekly" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <AnalyticsDataTable title="New Members" rows={data.members} columns={memberCols} pageSize={8} />
-                <AnalyticsDataTable title="Payments" rows={data.payments} columns={paymentCols} pageSize={8} />
-              </div>
-              <AnalyticsDataTable title="Leads" rows={data.leads} columns={leadCols} pageSize={8} />
             </TabsContent>
 
             <TabsContent value="monthly" className="space-y-6 mt-0">
               <AnalyticsKpis kpis={data.kpis} />
               <AnalyticsCharts data={data} variant="monthly" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <AnalyticsDataTable title="New Members" rows={data.members} columns={memberCols} pageSize={10} />
-                <AnalyticsDataTable title="Payments" rows={data.payments} columns={paymentCols} pageSize={10} />
-              </div>
-              <AnalyticsDataTable title="Leads" rows={data.leads} columns={leadCols} pageSize={10} />
             </TabsContent>
 
             <TabsContent value="yearly" className="space-y-6 mt-0">
               <AnalyticsKpis kpis={data.kpis} />
               <AnalyticsCharts data={data} variant="yearly" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <AnalyticsDataTable title="New Members" rows={data.members} columns={memberCols} pageSize={10} />
-                <AnalyticsDataTable title="Payments" rows={data.payments} columns={paymentCols} pageSize={10} />
-              </div>
-              <AnalyticsDataTable title="Leads" rows={data.leads} columns={leadCols} pageSize={10} />
             </TabsContent>
           </>
         )}
