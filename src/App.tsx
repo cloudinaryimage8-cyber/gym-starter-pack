@@ -29,6 +29,7 @@ import PublicTrainersPage from "./pages/PublicTrainersPage";
 import PublicEquipmentPage from "./pages/PublicEquipmentPage";
 import PublicTestimonialsPage from "./pages/PublicTestimonialsPage";
 import PublicProductsPage from "./pages/PublicProductsPage";
+import OwnerSummaryPage from "./pages/OwnerSummaryPage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ function AppLayout() {
       <Routes>
         <Route index element={<PlaceholderPage />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="owner-summary" element={<OwnerSummaryPage />} />
         <Route path="members" element={<MembersPage />} />
         <Route path="members/dashboard" element={<MembersDashboardPage />} />
         <Route path="members/:memberId" element={<MemberProfilePage />} />
