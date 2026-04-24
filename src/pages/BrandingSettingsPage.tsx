@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useGymSettings } from '@/hooks/useGymSettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Save, Dumbbell, Eye, Palette, Check } from 'lucide-react';
+import { Save, Eye, Palette, Check, RefreshCw } from 'lucide-react';
 
 
 
