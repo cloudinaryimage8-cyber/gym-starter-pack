@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon, IndianRupee, Receipt, TrendingUp, UserPlus, UserMinus, Users, AlertCircle, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { AnalyticsResult } from '@/services/dataService';
 
 interface KpiItem {
@@ -8,9 +9,11 @@ interface KpiItem {
   hint?: string;
   icon: LucideIcon;
   tone: 'primary' | 'success' | 'destructive' | 'muted';
+  to?: string;
 }
 
-function KpiCard({ title, value, hint, icon: Icon, tone }: KpiItem) {
+function KpiCard({ title, value, hint, icon: Icon, tone, to }: KpiItem) {
+  const navigate = useNavigate();
   const toneClass = {
     primary: 'text-primary bg-primary/10',
     success: 'text-emerald-500 bg-emerald-500/10',
