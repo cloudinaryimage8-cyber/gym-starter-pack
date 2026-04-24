@@ -368,3 +368,120 @@ if (!resolved.button_color) {
     </div>
   );
 }
+
+/* ── Live Preview component ──
+   Renders the public landing page inside an iframe so the owner sees the
+   full website (navbar, hero, all sections, footer) updating in real time
+   as they change colors. Theme is pushed via postMessage so changes apply
+   without saving or reloading. */
+interface LivePreviewProps {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  highlightColor: string;
+  cardColor: string;
+  headingColor: string;
+  descriptionColor: string;
+  buttonColor: string;
+}
+
+function LivePreview(props: LivePreviewProps) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [ready, setReady] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // Build the CSS variables payload from current form state.
+  const vars = useMemo(() => {
+    const p = props.primaryColor;
+    const s = props.secondaryColor;
+    const a = props.accentColor;
+    const h = props.highlightColor;
+    const c = props.cardColor;
+    const head = props.headingColor;
+    const desc = props.descriptionColor;
+    const btn = props.buttonColor || a;
+    const hue = (p || '0').split(' ')[0];
+    return {
+      '--primary': btn,
+      '--ring': btn,
+      '--accent': btn,
+      '--sidebar-primary': a,
+      '--sidebar-ring': a,
+      '--chart-1': a,
+      '--highlight': h,
+      '--website-bg': p,
+      '--website-bg-secondary': s,
+      '--ws-card': c || `${hue} 25% 7%`,
+      '--card': c || `${hue} 25% 7%`,
+      '--foreground': head,
+      '--ws-text': head,
+      '--card-foreground': head,
+      '--muted-foreground': desc,
+      '--ws-text-muted': desc,
+      '--ws-text-label': desc,
+      '--bg-gradient': `linear-gradient(to bottom, hsl(${p}), hsl(${s}))`,
+      '--bg-primary': `hsl(${p})`,
+      '--bg-secondary': `hsl(${s})`,
+      '--card-bg': `hsl(${c || `${hue} 25% 7%`})`,
+      '--card-border': `hsl(${hue} 20% 18%)`,
+      '--color-accent': `hsl(${a})`,
+      '--button-bg': `hsl(${btn})`,
+      '--button-hover': `hsl(${h})`,
+      '--button-text': '#FFFFFF',
+      '--text-heading': `hsl(${head})`,
+      '--text-description': `hsl(${desc})`,
+      '--navbar-bg': `hsl(${p})`,
+      '--footer-bg': `hsl(${s})`,
+    } as Record<string, string>;
+  }, [props]);
+
+  // Listen for the iframe ready handshake.
+  useEffect(() => {
+    function onMsg(e: MessageEvent) {
+      if (e.data?.type === 'gymos-preview-ready') setReady(true);
+    }
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [reloadKey]);
+
+  // Push vars whenever they change (and once iframe is ready).
+  useEffect(() => {
+    if (!ready) return;
+    const w = iframeRef.current?.contentWindow;
+    if (!w) return;
+    w.postMessage({ type: 'gymos-theme-preview', vars }, '*');
+  }, [ready, vars]);
+
+  return (
+    <Card className="sticky top-6 self-start">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="flex items-center gap-2">
+          <Eye className="h-4 w-4" /> Live Preview
+        </CardTitle>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => { setReady(false); setReloadKey(k => k + 1); }}
+          title="Reload preview"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-xl overflow-hidden border border-border bg-muted">
+          <iframe
+            key={reloadKey}
+            ref={iframeRef}
+            src="/"
+            title="Landing page preview"
+            className="w-full"
+            style={{ height: '700px', border: 0, display: 'block' }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Showing the full landing page. Color changes apply instantly — click Save to persist.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
