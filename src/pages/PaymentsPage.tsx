@@ -356,10 +356,10 @@ export default function PaymentsPage() {
                 </div>
               ) : (
                 <>
-                  <TabsContent value="all" className="m-0"><PaymentTable data={payments} showMarkPaid /></TabsContent>
-                  <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid /></TabsContent>
-                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid /></TabsContent>
-                  <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} /></TabsContent>
+                  <TabsContent value="all" className="m-0"><PaymentTable data={payments} showMarkPaid pageKey="all" /></TabsContent>
+                  <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid pageKey="pending" /></TabsContent>
+                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid pageKey="overdue" /></TabsContent>
+                  <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} pageKey="paid" /></TabsContent>
                 </>
               )}
             </CardContent>
