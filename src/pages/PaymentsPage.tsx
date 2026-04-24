@@ -212,44 +212,7 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {(pendingPayments.length > 0 || overduePayments.length > 0) && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingPayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Pending</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{overduePayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Overdue</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">₹{totalPendingAmount.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Total Due</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
 
         <Tabs defaultValue="all">
           <TabsList>
