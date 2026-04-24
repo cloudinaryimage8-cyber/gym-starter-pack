@@ -365,6 +365,46 @@ export default function PaymentsPage() {
             </CardContent>
           </Card>
         </Tabs>
+
+        <AlertDialog open={!!confirmAction} onOpenChange={(o) => !o && setConfirmAction(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {confirmAction?.type === 'delete' ? 'Delete payment?' : 'Mark payment as paid?'}
+              </AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-3">
+                  {confirmAction && (
+                    <div className="rounded-lg border bg-muted/30 p-3 text-sm text-foreground">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Member</span>
+                        <span className="font-medium">{confirmAction.payment.members?.name ?? '—'}</span>
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-muted-foreground">Amount</span>
+                        <span className="font-medium">₹{Number(confirmAction.payment.amount).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-muted-foreground">Date</span>
+                        <span className="font-medium">{format(new Date(confirmAction.payment.payment_date), 'dd MMM yyyy')}</span>
+                      </div>
+                    </div>
+                  )}
+                  <p>Are you sure you want to proceed?</p>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirm}
+                className={cn(confirmAction?.type === 'delete' && 'bg-destructive text-destructive-foreground hover:bg-destructive/90')}
+              >
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
   );
 }
