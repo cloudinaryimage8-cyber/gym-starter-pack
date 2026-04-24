@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { Database, RotateCcw, Trash2, Phone, Tag, Calendar as CalIcon } from 'lucide-react';
+import { Database, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { seedDemoData, resetDemoData, clearLocalData } from '@/data/mockDb';
@@ -16,7 +15,6 @@ import { SetupBanner } from '@/components/SetupBanner';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { AnalyticsKpis } from '@/components/dashboard/AnalyticsKpis';
 import { AnalyticsCharts } from '@/components/dashboard/AnalyticsCharts';
-import { AnalyticsDataTable, type Column } from '@/components/dashboard/AnalyticsDataTable';
 import {
   TodayPicker, WeekPicker, MonthPicker, YearPicker,
   rangeForToday, rangeForWeek, rangeForMonth, rangeForYear,
@@ -57,37 +55,6 @@ export default function Dashboard() {
     toast({ title: '🗑️ All data cleared!' });
   };
 
-  // Table column defs
-  const memberCols: Column<NonNullable<typeof data>['members'][number]>[] = [
-    { key: 'name', header: 'Member', render: r => <span className="font-medium">{r.name}</span> },
-    { key: 'phone', header: 'Phone', render: r => <span className="text-muted-foreground">{r.phone}</span> },
-    { key: 'plan', header: 'Plan' },
-    { key: 'start_date', header: 'Joined', render: r => format(new Date(r.start_date), 'dd MMM yyyy') },
-    {
-      key: 'status', header: 'Status',
-      render: r => <Badge variant={r.status === 'active' ? 'default' : 'destructive'}>{r.status}</Badge>,
-    },
-  ];
-  const paymentCols: Column<NonNullable<typeof data>['payments'][number]>[] = [
-    { key: 'member_name', header: 'Member', render: r => <span className="font-medium">{r.member_name}</span> },
-    { key: 'amount', header: 'Amount', render: r => <span className="font-mono">₹{r.amount.toLocaleString()}</span>, sortValue: r => r.amount },
-    { key: 'method', header: 'Method', render: r => <span className="capitalize">{r.method.replace('_', ' ')}</span> },
-    { key: 'payment_date', header: 'Date', render: r => format(new Date(r.payment_date), 'dd MMM yyyy') },
-    {
-      key: 'status', header: 'Status',
-      render: r => {
-        const variant = r.status === 'paid' ? 'default' : r.status === 'overdue' ? 'destructive' : 'secondary';
-        return <Badge variant={variant}>{r.status}</Badge>;
-      },
-    },
-  ];
-  const leadCols: Column<NonNullable<typeof data>['leads'][number]>[] = [
-    { key: 'name', header: 'Lead', render: r => <span className="font-medium">{r.name}</span> },
-    { key: 'phone', header: 'Phone', render: r => <span className="inline-flex items-center gap-1 text-muted-foreground"><Phone className="h-3 w-3" />{r.phone}</span> },
-    { key: 'goal', header: 'Goal', render: r => <span className="inline-flex items-center gap-1"><Tag className="h-3 w-3 text-muted-foreground" />{r.goal}</span> },
-    { key: 'status', header: 'Status', render: r => <Badge variant={r.status === 'joined' ? 'default' : 'secondary'} className="capitalize">{r.status.replace('_', ' ')}</Badge> },
-    { key: 'created_at', header: 'Date', render: r => <span className="inline-flex items-center gap-1 text-muted-foreground"><CalIcon className="h-3 w-3" />{format(new Date(r.created_at), 'dd MMM')}</span> },
-  ];
 
   return (
     <div className="space-y-6">
