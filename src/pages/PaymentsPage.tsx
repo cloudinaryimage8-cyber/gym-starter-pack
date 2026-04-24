@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { usePayments, useCreatePayment, useDeletePayment, useUpdatePaymentStatus } from '@/hooks/usePayments';
+import { useState, useMemo } from 'react';
+import { usePayments, useCreatePayment, useDeletePayment, useUpdatePaymentStatus, type Payment } from '@/hooks/usePayments';
 import { useMembers } from '@/hooks/useMembers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +8,39 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, CheckCircle, CreditCard, BarChart3 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+
+const PAGE_SIZE = 15;
+
+type ConfirmAction =
+  | { type: 'mark-paid'; payment: Payment }
+  | { type: 'delete'; payment: Payment }
+  | null;
 
 const methods = [
   { value: 'cash', label: 'Cash' },
