@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, CheckCircle, CreditCard, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, CreditCard, BarChart3 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -133,7 +133,7 @@ export default function PaymentsPage() {
     )
   );
 
-  const totalPendingAmount = [...(pendingPayments), ...(overduePayments)].reduce((sum, p) => sum + Number(p.amount), 0);
+
 
   return (
     <div className="space-y-6">
@@ -212,44 +212,7 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {(pendingPayments.length > 0 || overduePayments.length > 0) && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingPayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Pending</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{overduePayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Overdue</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">₹{totalPendingAmount.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Total Due</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
 
         <Tabs defaultValue="all">
           <TabsList>

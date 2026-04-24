@@ -182,7 +182,7 @@ export default function OwnerSummaryPage() {
       ) : (
         <>
           {/* Top KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <KpiCard title="Total Revenue" value={`₹${k.totalRevenue.toLocaleString()}`} icon={IndianRupee} tone="success"
               change={pk ? pctChange(k.totalRevenue, pk.totalRevenue) : undefined}
               onClick={() => navigate('/app/payments')} />
