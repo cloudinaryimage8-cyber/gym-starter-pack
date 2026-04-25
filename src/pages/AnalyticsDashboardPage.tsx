@@ -200,6 +200,11 @@ export default function AnalyticsDashboardPage() {
     return out.slice(0, 5);
   }, [stats, members, expenseByCategory]);
 
+  // Debug: verify chart data
+  if (typeof window !== 'undefined') {
+    console.log('[Analytics] revenueChart:', revenueChart?.length, 'paymentDist:', stats.paymentDist, 'memberGrowth:', memberGrowthChart?.length, 'expenseCats:', expenseByCategory?.length);
+  }
+
   const severityClass = {
     success: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400',
     warning: 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400',
