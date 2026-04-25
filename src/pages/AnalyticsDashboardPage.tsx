@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   TrendingUp, TrendingDown, Users, UserCheck, CreditCard, AlertTriangle,
@@ -17,20 +17,10 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { useLeads } from '@/hooks/useLeads';
 import { usePlans } from '@/hooks/usePlans';
 import { useRevenueChart } from '@/hooks/useRevenueChart';
-
-const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
-const LineChart = lazy(() => import('recharts').then(m => ({ default: m.LineChart })));
-const Line = lazy(() => import('recharts').then(m => ({ default: m.Line })));
-const AreaChart = lazy(() => import('recharts').then(m => ({ default: m.AreaChart })));
-const Area = lazy(() => import('recharts').then(m => ({ default: m.Area })));
-const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
-const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
-const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
-const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
-const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
-const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
-const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
-const Legend = lazy(() => import('recharts').then(m => ({ default: m.Legend })));
+import {
+  ResponsiveContainer, LineChart, Line, AreaChart, Area,
+  PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
+} from 'recharts';
 
 const inr = (n: number) => `₹${(n || 0).toLocaleString('en-IN')}`;
 
