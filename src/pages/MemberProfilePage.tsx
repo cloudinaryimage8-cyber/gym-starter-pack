@@ -15,7 +15,7 @@ import { RenewDialog } from '@/components/RenewDialog';
 import { useState } from 'react';
 import { generateInvoicePdf } from '@/utils/generateInvoicePdf';
 import { getInvoiceSettings } from '@/hooks/useInvoiceSettings';
-import { usePlans as _usePlans } from '@/hooks/usePlans';
+
 
 function getWhatsAppUrl(phone: string, name: string) {
   const cleanPhone = phone.replace(/[^0-9]/g, '');
