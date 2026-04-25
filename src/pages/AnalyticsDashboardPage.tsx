@@ -263,9 +263,11 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Revenue Trend (last 12 months)</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <Suspense fallback={<ChartFallback />}>
+                {(!revenueChart || revenueChart.length === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={revenueChart}>
+                    <AreaChart data={revenueChart} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
@@ -279,7 +281,7 @@ export default function AnalyticsDashboardPage() {
                       <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#rev)" />
                     </AreaChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
@@ -287,7 +289,9 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Payment Distribution</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <Suspense fallback={<ChartFallback />}>
+                {stats.paymentDist.every(p => p.value === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={stats.paymentDist} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
@@ -297,7 +301,7 @@ export default function AnalyticsDashboardPage() {
                       <Legend verticalAlign="bottom" height={36} iconType="circle" />
                     </PieChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
           </div>
