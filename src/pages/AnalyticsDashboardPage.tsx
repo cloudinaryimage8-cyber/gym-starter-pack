@@ -313,9 +313,11 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Member Growth</CardTitle>
               </CardHeader>
               <CardContent className="h-[280px]">
-                <Suspense fallback={<ChartFallback />}>
+                {(!memberGrowthChart || memberGrowthChart.length === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={memberGrowthChart}>
+                    <LineChart data={memberGrowthChart} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                       <XAxis dataKey="month" fontSize={12} />
                       <YAxis fontSize={12} />
@@ -323,7 +325,7 @@ export default function AnalyticsDashboardPage() {
                       <Line type="monotone" dataKey="members" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3 }} />
                     </LineChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
@@ -332,19 +334,17 @@ export default function AnalyticsDashboardPage() {
               </CardHeader>
               <CardContent className="h-[280px]">
                 {expenseByCategory.length === 0 ? (
-                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No expense data yet</div>
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
                 ) : (
-                  <Suspense fallback={<ChartFallback />}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={expenseByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80} paddingAngle={3}>
-                          {expenseByCategory.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
-                        </Pie>
-                        <Tooltip formatter={(v: number) => inr(v)} />
-                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </Suspense>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={expenseByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80} paddingAngle={3}>
+                        {expenseByCategory.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => inr(v)} />
+                      <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                    </PieChart>
+                  </ResponsiveContainer>
                 )}
               </CardContent>
             </Card>
