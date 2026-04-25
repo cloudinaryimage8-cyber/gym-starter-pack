@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -11,6 +11,7 @@ import { useGymSettings } from '@/hooks/useGymSettings';
 const navItems = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
   { title: 'Owner Summary', url: '/app/owner-summary', icon: Sparkles },
+  { title: 'Analytics', url: '/app/analytics', icon: BarChart3 },
   { title: 'Members', url: '/app/members', icon: Users },
   { title: 'Plans', url: '/app/plans', icon: Package },
   { title: 'Payments', url: '/app/payments', icon: CreditCard },
