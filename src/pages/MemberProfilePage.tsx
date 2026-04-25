@@ -8,11 +8,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell } from 'lucide-react';
+import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell, Download, FileText } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
 import { useState } from 'react';
+import { generateInvoicePdf } from '@/utils/generateInvoicePdf';
+import { getInvoiceSettings } from '@/hooks/useInvoiceSettings';
+import { usePlans as _usePlans } from '@/hooks/usePlans';
 
 function getWhatsAppUrl(phone: string, name: string) {
   const cleanPhone = phone.replace(/[^0-9]/g, '');
