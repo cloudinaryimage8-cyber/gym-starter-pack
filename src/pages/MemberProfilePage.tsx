@@ -193,6 +193,7 @@ export default function MemberProfilePage() {
                   <TableHead>Method</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Note</TableHead>
+                  <TableHead className="text-right">Invoice</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -205,6 +206,21 @@ export default function MemberProfilePage() {
                       <Badge variant={p.status === 'paid' ? 'default' : 'secondary'}>{p.status}</Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">{p.note ?? '—'}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => generateInvoicePdf({
+                          member,
+                          payment: p,
+                          totalPaid,
+                          planAmount: Number(p.amount),
+                          settings: getInvoiceSettings(),
+                        })}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -214,6 +230,37 @@ export default function MemberProfilePage() {
               No payments recorded for this member.
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Download Invoice Section */}
+      <Card>
+        <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-sm">Generate Invoice PDF</p>
+              <p className="text-xs text-muted-foreground">
+                Downloads an invoice for the latest payment. Customize template in Settings → Invoice Template.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              const latest = memberPayments[0];
+              generateInvoicePdf({
+                member,
+                payment: latest ?? null,
+                totalPaid,
+                planAmount: latest ? Number(latest.amount) : 0,
+                settings: getInvoiceSettings(),
+              });
+            }}
+          >
+            <Download className="h-4 w-4 mr-2" /> Download Invoice
+          </Button>
         </CardContent>
       </Card>
 
