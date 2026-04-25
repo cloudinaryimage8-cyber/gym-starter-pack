@@ -31,6 +31,7 @@ import PublicTestimonialsPage from "./pages/PublicTestimonialsPage";
 import PublicProductsPage from "./pages/PublicProductsPage";
 import OwnerSummaryPage from "./pages/OwnerSummaryPage";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
+import InvoiceSettingsPage from "./pages/InvoiceSettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ function AppLayout() {
         <Route path="website" element={<WebsiteBuilderPage />} />
         <Route path="contact" element={<ContactSettingsPage />} />
         <Route path="settings" element={<BrandingSettingsPage />} />
+        <Route path="settings/invoice" element={<InvoiceSettingsPage />} />
       </Routes>
     </DashboardLayout>
   );
