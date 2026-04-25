@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   TrendingUp, TrendingDown, Users, UserCheck, CreditCard, AlertTriangle,
@@ -17,20 +17,10 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { useLeads } from '@/hooks/useLeads';
 import { usePlans } from '@/hooks/usePlans';
 import { useRevenueChart } from '@/hooks/useRevenueChart';
-
-const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
-const LineChart = lazy(() => import('recharts').then(m => ({ default: m.LineChart })));
-const Line = lazy(() => import('recharts').then(m => ({ default: m.Line })));
-const AreaChart = lazy(() => import('recharts').then(m => ({ default: m.AreaChart })));
-const Area = lazy(() => import('recharts').then(m => ({ default: m.Area })));
-const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
-const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
-const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
-const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
-const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
-const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
-const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
-const Legend = lazy(() => import('recharts').then(m => ({ default: m.Legend })));
+import {
+  ResponsiveContainer, LineChart, Line, AreaChart, Area,
+  PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
+} from 'recharts';
 
 const inr = (n: number) => `₹${(n || 0).toLocaleString('en-IN')}`;
 
@@ -210,6 +200,11 @@ export default function AnalyticsDashboardPage() {
     return out.slice(0, 5);
   }, [stats, members, expenseByCategory]);
 
+  // Debug: verify chart data
+  if (typeof window !== 'undefined') {
+    console.log('[Analytics] revenueChart:', revenueChart?.length, 'paymentDist:', stats.paymentDist, 'memberGrowth:', memberGrowthChart?.length, 'expenseCats:', expenseByCategory?.length);
+  }
+
   const severityClass = {
     success: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400',
     warning: 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400',
@@ -268,9 +263,11 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Revenue Trend (last 12 months)</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <Suspense fallback={<ChartFallback />}>
+                {(!revenueChart || revenueChart.length === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={revenueChart}>
+                    <AreaChart data={revenueChart} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
@@ -284,7 +281,7 @@ export default function AnalyticsDashboardPage() {
                       <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#rev)" />
                     </AreaChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
@@ -292,7 +289,9 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Payment Distribution</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <Suspense fallback={<ChartFallback />}>
+                {stats.paymentDist.every(p => p.value === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={stats.paymentDist} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
@@ -302,7 +301,7 @@ export default function AnalyticsDashboardPage() {
                       <Legend verticalAlign="bottom" height={36} iconType="circle" />
                     </PieChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -314,9 +313,11 @@ export default function AnalyticsDashboardPage() {
                 <CardTitle className="text-base">Member Growth</CardTitle>
               </CardHeader>
               <CardContent className="h-[280px]">
-                <Suspense fallback={<ChartFallback />}>
+                {(!memberGrowthChart || memberGrowthChart.length === 0) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+                ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={memberGrowthChart}>
+                    <LineChart data={memberGrowthChart} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                       <XAxis dataKey="month" fontSize={12} />
                       <YAxis fontSize={12} />
@@ -324,7 +325,7 @@ export default function AnalyticsDashboardPage() {
                       <Line type="monotone" dataKey="members" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3 }} />
                     </LineChart>
                   </ResponsiveContainer>
-                </Suspense>
+                )}
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
@@ -333,19 +334,17 @@ export default function AnalyticsDashboardPage() {
               </CardHeader>
               <CardContent className="h-[280px]">
                 {expenseByCategory.length === 0 ? (
-                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No expense data yet</div>
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
                 ) : (
-                  <Suspense fallback={<ChartFallback />}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={expenseByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80} paddingAngle={3}>
-                          {expenseByCategory.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
-                        </Pie>
-                        <Tooltip formatter={(v: number) => inr(v)} />
-                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </Suspense>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={expenseByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80} paddingAngle={3}>
+                        {expenseByCategory.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i % DONUT_COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => inr(v)} />
+                      <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                    </PieChart>
+                  </ResponsiveContainer>
                 )}
               </CardContent>
             </Card>
