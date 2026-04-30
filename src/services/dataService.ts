@@ -393,7 +393,14 @@ export async function renewMembership(params: { memberId: string; planId: string
 // ─── Dashboard Stats ───
 export async function getDashboardStats() {
   await delay();
-  const d = db();
+  const raw = db();
+  const d: MockDb = {
+    ...raw,
+    members: raw.members.filter(m => !m.is_deleted),
+    payments: raw.payments.filter(p => !p.is_deleted),
+    leads: raw.leads.filter(l => !l.is_deleted),
+    expenses: raw.expenses.filter(e => !e.is_deleted),
+  };
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   const monthStart = `${today.slice(0, 7)}-01`;
@@ -459,7 +466,8 @@ export async function getDashboardStats() {
 // ─── Revenue Chart ───
 export async function getRevenueChart() {
   await delay();
-  const d = db();
+  const raw = db();
+  const d = { ...raw, payments: raw.payments.filter(p => !p.is_deleted) };
   const now = new Date();
   const months: { month: string; revenue: number }[] = [];
 
