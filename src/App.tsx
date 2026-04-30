@@ -33,6 +33,9 @@ import PublicProductsPage from "./pages/PublicProductsPage";
 import PublicProductDetailPage from "./pages/PublicProductDetailPage";
 import OwnerSummaryPage from "./pages/OwnerSummaryPage";
 import InvoiceSettingsPage from "./pages/InvoiceSettingsPage";
+import RecycleBinPage from "./pages/RecycleBinPage";
+import { useEffect } from "react";
+import { runRecycleCleanup } from "./services/dataService";
 
 const queryClient = new QueryClient();
 
@@ -59,12 +62,23 @@ function AppLayout() {
         <Route path="contact" element={<ContactSettingsPage />} />
         <Route path="settings" element={<BrandingSettingsPage />} />
         <Route path="settings/invoice" element={<InvoiceSettingsPage />} />
+        <Route path="recycle" element={<RecycleBinPage />} />
       </Routes>
     </DashboardLayout>
   );
 }
 
-const App = () => (
+const App = () => {
+  // Run recycle bin cleanup on app load (purges items >24h old)
+  useEffect(() => {
+    try { runRecycleCleanup(); } catch (e) { console.warn('[recycle] cleanup failed', e); }
+    const interval = setInterval(() => {
+      try { runRecycleCleanup(); } catch {}
+    }, 60 * 60 * 1000); // hourly
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -87,7 +101,8 @@ const App = () => (
         </BrandingProvider>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;

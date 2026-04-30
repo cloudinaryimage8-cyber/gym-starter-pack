@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -22,6 +22,7 @@ const navItems = [
   { title: 'Contact', url: '/app/contact', icon: MessageCircle },
   { title: 'Settings', url: '/app/settings', icon: Settings },
   { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText },
+  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2 },
 ];
 
 export function AppSidebar() {
