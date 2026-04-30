@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useMembers, useCreateMember, useUpdateMember, useDeleteMember, Member } from '@/hooks/useMembers';
 import { usePlans } from '@/hooks/usePlans';
-import { usePayments, useCreatePayment } from '@/hooks/usePayments';
+import { usePayments } from '@/hooks/usePayments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,8 @@ import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw, Bell, Credi
 import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
+import { AddPaymentDialog } from '@/components/AddPaymentDialog';
+import { ReminderDialog, whatsappDirect } from '@/components/ReminderDialog';
 
 type SortKey = 'name' | 'start_date' | 'expiry_date' | 'plan' | 'status';
 type SortDir = 'asc' | 'desc';
@@ -40,13 +42,8 @@ function getExpiryInfo(expiryDate: string) {
   return { label: 'Active', variant: 'active' as const, daysLeft };
 }
 
-function getWhatsAppUrl(phone: string, name: string) {
-  const cleanPhone = phone.replace(/[^0-9]/g, '');
-  const fullPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
-  const message = encodeURIComponent(
-    `Hi ${name}, your gym membership is expiring soon. Please renew.`
-  );
-  return `https://wa.me/${fullPhone}?text=${message}`;
+function getWhatsAppDirect(phone: string) {
+  return whatsappDirect(phone);
 }
 
 function MemberForm({ member, plans, onSubmit, onCancel }: {
@@ -192,16 +189,14 @@ export default function MembersPage() {
   const createMember = useCreateMember();
   const updateMember = useUpdateMember();
   const deleteMember = useDeleteMember();
-  const createPayment = useCreatePayment();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | undefined>();
   const [renewMember, setRenewMember] = useState<Member | undefined>();
-  const [collectPaymentMember, setCollectPaymentMember] = useState<Member | undefined>();
-  const [collectAmount, setCollectAmount] = useState('');
-  const [collectMethod, setCollectMethod] = useState('cash');
+  const [paymentMember, setPaymentMember] = useState<Member | undefined>();
+  const [reminderMember, setReminderMember] = useState<Member | undefined>();
 
   // ─── URL-driven state ───
   const statusFilter = (searchParams.get('status') ?? 'all') as 'all' | 'active' | 'expired' | 'overdue';
@@ -343,21 +338,21 @@ export default function MembersPage() {
   }).length ?? 0;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+    <div className="space-y-6 max-w-full">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold font-display">Members</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Manage your gym members
             {(expiringCount > 0 || expiredCount > 0) && (
-              <span className="ml-2">
+              <span className="ml-2 inline-flex flex-wrap gap-1">
                 {expiringCount > 0 && (
-                  <Badge variant="outline" className="ml-1 border-yellow-500 text-yellow-600 bg-yellow-500/10">
+                  <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-500/10">
                     {expiringCount} expiring
                   </Badge>
                 )}
                 {expiredCount > 0 && (
-                  <Badge variant="destructive" className="ml-1">
+                  <Badge variant="destructive">
                     {expiredCount} expired
                   </Badge>
                 )}
@@ -365,14 +360,13 @@ export default function MembersPage() {
             )}
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" onClick={() => navigate('/app/members/dashboard')}>
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/app/members/dashboard')}>
             <BarChart3 className="h-4 w-4 mr-2" /> Members Dashboard
           </Button>
-          {/* Quick Add */}
           <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" disabled={!plans || plans.length === 0}>
+              <Button variant="outline" className="w-full sm:w-auto" disabled={!plans || plans.length === 0}>
                 <Zap className="h-4 w-4 mr-2" /> Quick Add
               </Button>
             </DialogTrigger>
@@ -383,19 +377,13 @@ export default function MembersPage() {
                 </DialogTitle>
               </DialogHeader>
               {plans && plans.length > 0 && (
-                <QuickAddForm
-                  plans={plans}
-                  onSubmit={handleSubmit}
-                  onCancel={() => setQuickAddOpen(false)}
-                />
+                <QuickAddForm plans={plans} onSubmit={handleSubmit} onCancel={() => setQuickAddOpen(false)} />
               )}
             </DialogContent>
           </Dialog>
-
-          {/* Full Add */}
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingMember(undefined); }}>
             <DialogTrigger asChild>
-              <Button disabled={!plans || plans.length === 0}>
+              <Button className="w-full sm:w-auto" disabled={!plans || plans.length === 0}>
                 <Plus className="h-4 w-4 mr-2" /> Add Member
               </Button>
             </DialogTrigger>
@@ -404,12 +392,7 @@ export default function MembersPage() {
                 <DialogTitle>{editingMember ? 'Edit Member' : 'Add New Member'}</DialogTitle>
               </DialogHeader>
               {plans && plans.length > 0 && (
-                <MemberForm
-                  member={editingMember}
-                  plans={plans}
-                  onSubmit={handleSubmit}
-                  onCancel={() => setDialogOpen(false)}
-                />
+                <MemberForm member={editingMember} plans={plans} onSubmit={handleSubmit} onCancel={() => setDialogOpen(false)} />
               )}
             </DialogContent>
           </Dialog>
@@ -418,19 +401,19 @@ export default function MembersPage() {
 
       {/* Controls: search + filters */}
       <Card>
-        <CardContent className="p-4 flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[220px]">
+        <CardContent className="p-3 sm:p-4 grid grid-cols-1 sm:flex sm:flex-wrap sm:items-center gap-3">
+          <div className="relative flex-1 min-w-0 sm:min-w-[220px] w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               placeholder="Search by name, phone, or plan…"
-              className="pl-9"
+              className="pl-9 w-full"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={(v) => updateParam('status', v)}>
-            <SelectTrigger className="w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger data-mobile-full className="w-full sm:w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
@@ -440,7 +423,7 @@ export default function MembersPage() {
           </Select>
 
           <Select value={planFilter} onValueChange={(v) => updateParam('plan', v)}>
-            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Plan category" /></SelectTrigger>
+            <SelectTrigger data-mobile-full className="w-full sm:w-[160px]"><SelectValue placeholder="Plan category" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All plans</SelectItem>
               {planCategories.map(c => (
@@ -450,7 +433,7 @@ export default function MembersPage() {
           </Select>
 
           <Select value={expiryFilter} onValueChange={(v) => updateParam('expiry', v)}>
-            <SelectTrigger className="w-[170px]"><SelectValue placeholder="Expiry" /></SelectTrigger>
+            <SelectTrigger data-mobile-full className="w-full sm:w-[170px]"><SelectValue placeholder="Expiry" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Any expiry</SelectItem>
               <SelectItem value="7days">Expiring in 7 days</SelectItem>
@@ -488,7 +471,7 @@ export default function MembersPage() {
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
           ) : members && members.length > 0 ? (
-            <Table>
+            <div className="responsive-card-table"><Table>
               <TableHeader>
                 <TableRow>
                   <TableHead><button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => toggleSort('name')}>Name <ArrowUpDown className="h-3 w-3 opacity-50" /></button></TableHead>
@@ -525,10 +508,10 @@ export default function MembersPage() {
                       )}
                       onClick={() => navigate(`/app/members/${member.id}`)}
                     >
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.phone}</TableCell>
-                      <TableCell>{member.plans?.name ?? '—'}</TableCell>
-                      <TableCell>
+                      <TableCell data-label="Name" className="font-medium">{member.name}</TableCell>
+                      <TableCell data-label="Phone">{member.phone}</TableCell>
+                      <TableCell data-label="Plan">{member.plans?.name ?? '—'}</TableCell>
+                      <TableCell data-label="Status">
                         {expiry.variant === 'expired' ? (
                           <Badge variant="destructive">Expired</Badge>
                         ) : expiry.variant === 'expiring' ? (
@@ -539,7 +522,7 @@ export default function MembersPage() {
                           <Badge variant="default">Active</Badge>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Payment">
                         {payStatus === 'paid' ? (
                           <Badge variant="default" className="bg-emerald-500/10 text-emerald-600 border-emerald-300 border">Paid</Badge>
                         ) : payStatus === 'overdue' ? (
@@ -548,7 +531,7 @@ export default function MembersPage() {
                           <Badge variant="outline" className="border-orange-400 text-orange-500 bg-orange-500/10">Pending</Badge>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell data-label="Expiry">
                         <span className={cn(
                           expiry.variant === 'expired' && 'text-destructive font-medium',
                           expiry.variant === 'expiring' && 'text-yellow-600 font-medium'
@@ -556,18 +539,16 @@ export default function MembersPage() {
                           {format(new Date(member.expiry_date), 'dd MMM yyyy')}
                         </span>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell data-label="Actions" className="text-right actions-cell">
                         <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
-                          {(payStatus === 'pending' || payStatus === 'overdue') && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="Collect Payment"
-                              onClick={() => { setCollectPaymentMember(member); setCollectAmount(''); }}
-                            >
-                              <CreditCard className="h-4 w-4 text-orange-500" />
-                            </Button>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Add Payment"
+                            onClick={() => setPaymentMember(member)}
+                          >
+                            <CreditCard className={cn('h-4 w-4', (payStatus === 'pending' || payStatus === 'overdue') ? 'text-orange-500' : 'text-primary')} />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -583,7 +564,7 @@ export default function MembersPage() {
                             asChild
                           >
                             <a
-                              href={getWhatsAppUrl(member.phone, member.name)}
+                              href={getWhatsAppDirect(member.phone)}
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Contact on WhatsApp"
@@ -591,16 +572,14 @@ export default function MembersPage() {
                               <MessageCircle className="h-4 w-4" />
                             </a>
                           </Button>
-                          {(expiry.variant === 'expiring' || expiry.variant === 'expired') && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="Send Reminder (coming soon)"
-                              onClick={() => toast({ title: '📩 Reminder', description: `Reminder feature for ${member.name} coming soon!` })}
-                            >
-                              <Bell className="h-4 w-4 text-yellow-600" />
-                            </Button>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Send Reminder"
+                            onClick={() => setReminderMember(member)}
+                          >
+                            <Bell className="h-4 w-4 text-yellow-600" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -617,7 +596,7 @@ export default function MembersPage() {
                   );
                 })}
               </TableBody>
-            </Table>
+            </Table></div>
           ) : null}
           {members && members.length > 0 && totalPages > 1 && (
             <div className="flex items-center justify-between p-4 border-t">
@@ -685,56 +664,24 @@ export default function MembersPage() {
         />
       )}
 
-      {/* Collect Payment Dialog */}
-      <Dialog open={!!collectPaymentMember} onOpenChange={(open) => { if (!open) setCollectPaymentMember(undefined); }}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Collect Payment — {collectPaymentMember?.name}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            if (!collectPaymentMember || !collectAmount) return;
-            try {
-              await createPayment.mutateAsync({
-                member_id: collectPaymentMember.id,
-                amount: parseFloat(collectAmount),
-                payment_date: format(new Date(), 'yyyy-MM-dd'),
-                method: collectMethod,
-                status: 'paid',
-              });
-              toast({ title: '✅ Payment collected!', description: `₹${collectAmount} from ${collectPaymentMember.name}` });
-              setCollectPaymentMember(undefined);
-            } catch (err: any) {
-              toast({ title: 'Error', description: err.message, variant: 'destructive' });
-            }
-          }} className="space-y-4">
-            <div className="p-3 rounded-lg bg-muted text-sm">
-              <p><span className="text-muted-foreground">Plan:</span> {collectPaymentMember?.plans?.name ?? '—'}</p>
-              <p><span className="text-muted-foreground">Phone:</span> {collectPaymentMember?.phone}</p>
-            </div>
-            <div className="space-y-2">
-              <Label>Amount (₹)</Label>
-              <Input type="number" value={collectAmount} onChange={e => setCollectAmount(e.target.value)} required min="1" autoFocus />
-            </div>
-            <div className="space-y-2">
-              <Label>Method</Label>
-              <Select value={collectMethod} onValueChange={setCollectMethod}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="upi">UPI</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" onClick={() => setCollectPaymentMember(undefined)}>Cancel</Button>
-              <Button type="submit">Collect Payment</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Add Payment Dialog */}
+      <AddPaymentDialog
+        open={!!paymentMember}
+        onOpenChange={(open) => { if (!open) setPaymentMember(undefined); }}
+        member={paymentMember ?? null}
+      />
+
+      {/* Reminder Dialog */}
+      <ReminderDialog
+        open={!!reminderMember}
+        onOpenChange={(open) => { if (!open) setReminderMember(undefined); }}
+        target={reminderMember ? {
+          id: reminderMember.id,
+          name: reminderMember.name,
+          phone: reminderMember.phone,
+          due_date: reminderMember.expiry_date,
+        } : null}
+      />
     </div>
   );
 }

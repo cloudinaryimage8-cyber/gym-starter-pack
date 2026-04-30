@@ -3,10 +3,15 @@ import { motion } from 'framer-motion';
 import {
   TrendingUp, TrendingDown, Users, UserCheck, CreditCard, AlertTriangle,
   Target, BarChart3, DollarSign, Sparkles, Calendar, Filter, Activity,
-  ArrowUpRight, ArrowDownRight, Lightbulb, AlertCircle, CheckCircle2,
+  ArrowUpRight, ArrowDownRight, Lightbulb, AlertCircle, CheckCircle2, Database,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { seedDemoData, resetDemoData } from '@/data/mockDb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -15,12 +20,54 @@ import { useMembers } from '@/hooks/useMembers';
 import { usePayments } from '@/hooks/usePayments';
 import { useExpenses } from '@/hooks/useExpenses';
 import { useLeads } from '@/hooks/useLeads';
-import { usePlans } from '@/hooks/usePlans';
-import { useRevenueChart } from '@/hooks/useRevenueChart';
 import {
   ResponsiveContainer, LineChart, Line, AreaChart, Area,
   PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
+
+type RangeMode = 'day' | 'week' | 'month' | 'year';
+
+function getRange(mode: RangeMode, anchor: Date): { from: Date; to: Date; label: string } {
+  const d = new Date(anchor);
+  if (mode === 'day') {
+    const from = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
+    const to = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+    return { from, to, label: from.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) };
+  }
+  if (mode === 'week') {
+    // Week = 7 days ending on anchor (inclusive)
+    const to = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+    const from = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 6, 0, 0, 0);
+    return { from, to, label: `${from.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} – ${to.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}` };
+  }
+  if (mode === 'month') {
+    const from = new Date(d.getFullYear(), d.getMonth(), 1);
+    const to = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+    return { from, to, label: from.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) };
+  }
+  // year
+  const from = new Date(d.getFullYear(), 0, 1);
+  const to = new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
+  return { from, to, label: String(d.getFullYear()) };
+}
+
+function getPrevRange(mode: RangeMode, anchor: Date): { from: Date; to: Date } {
+  const d = new Date(anchor);
+  if (mode === 'day') {
+    const prev = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+    return getRange('day', prev);
+  }
+  if (mode === 'week') {
+    const prev = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7);
+    return getRange('week', prev);
+  }
+  if (mode === 'month') {
+    const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+    return getRange('month', prev);
+  }
+  const prev = new Date(d.getFullYear() - 1, 0, 1);
+  return getRange('year', prev);
+}
 
 const inr = (n: number) => `₹${(n || 0).toLocaleString('en-IN')}`;
 
@@ -66,57 +113,67 @@ function KpiCard({ label, value, change, icon: Icon, gradient, onClick }: KpiCar
 
 export default function AnalyticsDashboardPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const qc = useQueryClient();
   const { data: members = [] } = useMembers();
   const { data: payments = [] } = usePayments();
   const { data: expenses = [] } = useExpenses();
   const { leads = [] } = useLeads();
-  const { data: plans = [] } = usePlans();
-  const { data: revenueChart = [] } = useRevenueChart();
 
   const [tab, setTab] = useState('overview');
-  const [dateRange, setDateRange] = useState('30');
-  const [granularity, setGranularity] = useState<'month' | 'year'>('month');
-  const [planFilter, setPlanFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [rangeMode, setRangeMode] = useState<RangeMode>('month');
+  const [anchorDate, setAnchorDate] = useState<Date>(new Date());
+
+  const handleLoadDemo = async () => {
+    resetDemoData();
+    seedDemoData();
+    await qc.resetQueries();
+    toast({ title: '✅ Demo data loaded successfully!' });
+  };
+
+  const { from, to, label: rangeLabel } = useMemo(() => getRange(rangeMode, anchorDate), [rangeMode, anchorDate]);
+  const prev = useMemo(() => getPrevRange(rangeMode, anchorDate), [rangeMode, anchorDate]);
+
+  const inRange = (dateStr: string, f: Date, t: Date) => {
+    const d = new Date(dateStr);
+    return d >= f && d <= t;
+  };
+
+  // Filter datasets by selected date range
+  const filtered = useMemo(() => {
+    const fPayments = payments.filter(p => inRange(p.payment_date, from, to));
+    const fExpenses = expenses.filter(e => inRange(e.expense_date, from, to));
+    const fLeads = leads.filter(l => inRange(l.created_at, from, to));
+    const fMembersNew = members.filter(m => inRange(m.created_at, from, to));
+    return { fPayments, fExpenses, fLeads, fMembersNew };
+  }, [payments, expenses, leads, members, from, to]);
 
   const stats = useMemo(() => {
-    const now = new Date();
-    const startThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-
-    const paid = payments.filter(p => p.status === 'paid');
-    const pending = payments.filter(p => p.status === 'pending');
-    const overdue = payments.filter(p => p.status === 'overdue');
-
-    const revThisMonth = paid.filter(p => new Date(p.payment_date) >= startThisMonth).reduce((s, p) => s + Number(p.amount), 0);
-    const revLastMonth = paid.filter(p => {
-      const d = new Date(p.payment_date);
-      return d >= startLastMonth && d <= endLastMonth;
-    }).reduce((s, p) => s + Number(p.amount), 0);
-    const revGrowth = revLastMonth > 0 ? ((revThisMonth - revLastMonth) / revLastMonth) * 100 : 0;
+    const paid = filtered.fPayments.filter(p => p.status === 'paid');
+    const pending = filtered.fPayments.filter(p => p.status === 'pending');
+    const overdue = filtered.fPayments.filter(p => p.status === 'overdue');
 
     const totalRevenue = paid.reduce((s, p) => s + Number(p.amount), 0);
+
+    // Previous-period revenue for change %
+    const revPrev = payments
+      .filter(p => p.status === 'paid' && inRange(p.payment_date, prev.from, prev.to))
+      .reduce((s, p) => s + Number(p.amount), 0);
+    const revGrowth = revPrev > 0 ? ((totalRevenue - revPrev) / revPrev) * 100 : 0;
+
     const activeMembers = members.filter(m => m.status === 'active').length;
     const totalMembers = members.length;
 
-    const newMembersThis = members.filter(m => new Date(m.created_at) >= startThisMonth).length;
-    const newMembersLast = members.filter(m => {
-      const d = new Date(m.created_at);
-      return d >= startLastMonth && d <= endLastMonth;
-    }).length;
-    const memberGrowth = newMembersLast > 0 ? ((newMembersThis - newMembersLast) / newMembersLast) * 100 : 0;
+    const newMembersThis = filtered.fMembersNew.length;
+    const newMembersPrev = members.filter(m => inRange(m.created_at, prev.from, prev.to)).length;
+    const memberGrowth = newMembersPrev > 0 ? ((newMembersThis - newMembersPrev) / newMembersPrev) * 100 : 0;
 
-    const joined = leads.filter(l => l.status === 'joined').length;
-    const conversionRate = leads.length > 0 ? (joined / leads.length) * 100 : 0;
-    const leadsThis = leads.filter(l => new Date(l.created_at) >= startThisMonth);
-    const leadsLast = leads.filter(l => {
-      const d = new Date(l.created_at);
-      return d >= startLastMonth && d <= endLastMonth;
-    });
-    const convThis = leadsThis.length > 0 ? (leadsThis.filter(l => l.status === 'joined').length / leadsThis.length) * 100 : 0;
-    const convLast = leadsLast.length > 0 ? (leadsLast.filter(l => l.status === 'joined').length / leadsLast.length) * 100 : 0;
-    const convChange = convLast > 0 ? convThis - convLast : 0;
+    const leadsThis = filtered.fLeads;
+    const joined = leadsThis.filter(l => l.status === 'joined').length;
+    const conversionRate = leadsThis.length > 0 ? (joined / leadsThis.length) * 100 : 0;
+    const leadsPrev = leads.filter(l => inRange(l.created_at, prev.from, prev.to));
+    const convPrev = leadsPrev.length > 0 ? (leadsPrev.filter(l => l.status === 'joined').length / leadsPrev.length) * 100 : 0;
+    const convChange = convPrev > 0 ? conversionRate - convPrev : 0;
 
     const arpu = activeMembers > 0 ? totalRevenue / activeMembers : 0;
 
@@ -126,35 +183,96 @@ export default function AnalyticsDashboardPage() {
       overdueAmount: overdue.reduce((s, p) => s + Number(p.amount), 0),
       pendingCount: pending.length, overdueCount: overdue.length,
       conversionRate, convChange, memberGrowth, revGrowth, arpu,
-      revThisMonth, revLastMonth,
+      revThisMonth: totalRevenue, revLastMonth: revPrev,
+      newMembersThis,
       paymentDist: [
         { name: 'Paid', value: paid.length },
         { name: 'Pending', value: pending.length },
         { name: 'Overdue', value: overdue.length },
       ],
     };
-  }, [members, payments, leads]);
+  }, [filtered, members, payments, leads, prev]);
 
   const expenseByCategory = useMemo(() => {
     const map = new Map<string, number>();
-    expenses.forEach(e => {
+    filtered.fExpenses.forEach(e => {
       const cat = e.category || 'Other';
       map.set(cat, (map.get(cat) || 0) + Number(e.amount));
     });
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
-  }, [expenses]);
+  }, [filtered]);
 
+  // Member growth chart — buckets adapt to range mode
   const memberGrowthChart = useMemo(() => {
-    const months: { month: string; members: number }[] = [];
-    const now = new Date();
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-      const count = members.filter(m => new Date(m.created_at) <= end).length;
-      months.push({ month: d.toLocaleString('en', { month: 'short' }), members: count });
+    const points: { month: string; members: number }[] = [];
+    if (rangeMode === 'day' || rangeMode === 'week') {
+      const days = rangeMode === 'day' ? 1 : 7;
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(to);
+        d.setDate(d.getDate() - i);
+        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+        const count = members.filter(m => new Date(m.created_at) <= end).length;
+        points.push({ month: d.toLocaleDateString('en', { day: '2-digit', month: 'short' }), members: count });
+      }
+    } else if (rangeMode === 'month') {
+      const daysInMonth = to.getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const end = new Date(from.getFullYear(), from.getMonth(), day, 23, 59, 59, 999);
+        const count = members.filter(m => new Date(m.created_at) <= end).length;
+        points.push({ month: String(day), members: count });
+      }
+    } else {
+      // year — 12 months
+      for (let m = 0; m < 12; m++) {
+        const end = new Date(from.getFullYear(), m + 1, 0, 23, 59, 59, 999);
+        const count = members.filter(m2 => new Date(m2.created_at) <= end).length;
+        points.push({ month: new Date(from.getFullYear(), m, 1).toLocaleString('en', { month: 'short' }), members: count });
+      }
     }
-    return months;
-  }, [members]);
+    return points;
+  }, [members, rangeMode, from, to]);
+
+  // Revenue chart aligned to range
+  const revenueChartFiltered = useMemo(() => {
+    const paid = filtered.fPayments.filter(p => p.status === 'paid');
+    if (rangeMode === 'day') {
+      // Hourly buckets aren't meaningful with daily date data — show single bucket
+      const total = paid.reduce((s, p) => s + Number(p.amount), 0);
+      return [{ month: rangeLabel, revenue: total }];
+    }
+    if (rangeMode === 'week') {
+      const points: { month: string; revenue: number }[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(to);
+        d.setDate(d.getDate() - i);
+        const dayKey = d.toISOString().slice(0, 10);
+        const total = paid.filter(p => new Date(p.payment_date).toISOString().slice(0, 10) === dayKey).reduce((s, p) => s + Number(p.amount), 0);
+        points.push({ month: d.toLocaleDateString('en', { day: '2-digit', month: 'short' }), revenue: total });
+      }
+      return points;
+    }
+    if (rangeMode === 'month') {
+      const daysInMonth = to.getDate();
+      const points: { month: string; revenue: number }[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDate = new Date(from.getFullYear(), from.getMonth(), day);
+        const dayKey = dayDate.toISOString().slice(0, 10);
+        const total = paid.filter(p => new Date(p.payment_date).toISOString().slice(0, 10) === dayKey).reduce((s, p) => s + Number(p.amount), 0);
+        points.push({ month: String(day), revenue: total });
+      }
+      return points;
+    }
+    // year
+    const points: { month: string; revenue: number }[] = [];
+    for (let m = 0; m < 12; m++) {
+      const total = paid.filter(p => {
+        const d = new Date(p.payment_date);
+        return d.getFullYear() === from.getFullYear() && d.getMonth() === m;
+      }).reduce((s, p) => s + Number(p.amount), 0);
+      points.push({ month: new Date(from.getFullYear(), m, 1).toLocaleString('en', { month: 'short' }), revenue: total });
+    }
+    return points;
+  }, [filtered, rangeMode, from, to, rangeLabel]);
 
   // ────── AI INSIGHTS (rule-based) ──────
   const insights = useMemo(() => {
@@ -200,10 +318,6 @@ export default function AnalyticsDashboardPage() {
     return out.slice(0, 5);
   }, [stats, members, expenseByCategory]);
 
-  // Debug: verify chart data
-  if (typeof window !== 'undefined') {
-    console.log('[Analytics] revenueChart:', revenueChart?.length, 'paymentDist:', stats.paymentDist, 'memberGrowth:', memberGrowthChart?.length, 'expenseCats:', expenseByCategory?.length);
-  }
 
   const severityClass = {
     success: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400',
@@ -215,15 +329,18 @@ export default function AnalyticsDashboardPage() {
   const ChartFallback = () => <Skeleton className="h-full w-full rounded-lg" />;
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-4 md:space-y-6 pb-8 px-1 sm:px-0">
+      {/* Header — mobile stacks: Title → Buttons → Filters (Tabs) */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Real-time business intelligence for your gym</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Unified analytics and business intelligence</p>
         </div>
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList>
+        <Button size="sm" variant="outline" onClick={handleLoadDemo} className="w-full lg:w-auto justify-center">
+          <Database className="mr-2 h-4 w-4" /> Load Demo Data
+        </Button>
+        <Tabs value={tab} onValueChange={setTab} className="w-full lg:w-auto">
+          <TabsList className="overflow-x-auto max-w-full w-full lg:w-auto justify-start">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="members" onClick={() => navigate('/app/members/dashboard')}>Members</TabsTrigger>
             <TabsTrigger value="payments" onClick={() => navigate('/app/payments/dashboard')}>Payments</TabsTrigger>
@@ -233,11 +350,86 @@ export default function AnalyticsDashboardPage() {
         </Tabs>
       </div>
 
+      {/* Top Time Filter Bar */}
+      <Card className="rounded-2xl md:sticky md:top-2 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+        <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0">
+            <Filter className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold">Time Filter</span>
+          </div>
+          <Tabs value={rangeMode} onValueChange={(v) => setRangeMode(v as RangeMode)} className="shrink-0">
+            <TabsList className="grid grid-cols-4 w-full md:w-auto">
+              <TabsTrigger value="day">Day</TabsTrigger>
+              <TabsTrigger value="week">Week</TabsTrigger>
+              <TabsTrigger value="month">Month</TabsTrigger>
+              <TabsTrigger value="year">Year</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {(rangeMode === 'day' || rangeMode === 'week') && (
+            <Input
+              type="date"
+              value={anchorDate.toISOString().slice(0, 10)}
+              onChange={(e) => setAnchorDate(new Date(e.target.value))}
+              className="w-full md:w-44"
+            />
+          )}
+
+          {rangeMode === 'month' && (
+            <div className="flex gap-2 w-full md:w-auto">
+              <Select
+                value={String(anchorDate.getMonth())}
+                onValueChange={(v) => { const d = new Date(anchorDate); d.setMonth(parseInt(v)); setAnchorDate(d); }}
+              >
+                <SelectTrigger className="md:w-36"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)}>{new Date(2000, i, 1).toLocaleString('en', { month: 'long' })}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={String(anchorDate.getFullYear())}
+                onValueChange={(v) => { const d = new Date(anchorDate); d.setFullYear(parseInt(v)); setAnchorDate(d); }}
+              >
+                <SelectTrigger className="md:w-28"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 6 }, (_, i) => {
+                    const y = new Date().getFullYear() - i;
+                    return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {rangeMode === 'year' && (
+            <Select
+              value={String(anchorDate.getFullYear())}
+              onValueChange={(v) => { const d = new Date(anchorDate); d.setFullYear(parseInt(v)); setAnchorDate(d); }}
+            >
+              <SelectTrigger className="w-full md:w-32"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 6 }, (_, i) => {
+                  const y = new Date().getFullYear() - i;
+                  return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                })}
+              </SelectContent>
+            </Select>
+          )}
+
+          <div className="md:ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+            <Calendar className="h-3.5 w-3.5" />
+            Showing: <span className="font-semibold text-foreground">{rangeLabel}</span>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
         {/* MAIN COLUMN */}
         <div className="space-y-6 min-w-0">
           {/* KPI CARDS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             <KpiCard label="Total Revenue" value={inr(stats.totalRevenue)} change={stats.revGrowth} icon={DollarSign}
               gradient="bg-gradient-to-br from-violet-500 to-purple-600" onClick={() => navigate('/app/payments')} />
             <KpiCard label="Total Members" value={String(stats.totalMembers)} change={stats.memberGrowth} icon={Users}
@@ -257,17 +449,17 @@ export default function AnalyticsDashboardPage() {
           </div>
 
           {/* ROW 1: revenue trend + payment donut */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <Card className="lg:col-span-2 rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-base">Revenue Trend (last 12 months)</CardTitle>
+              <CardHeader className="pb-2 sm:pb-4">
+                <CardTitle className="text-base">Revenue Trend ({rangeLabel})</CardTitle>
               </CardHeader>
-              <CardContent className="h-[300px]">
-                {(!revenueChart || revenueChart.length === 0) ? (
-                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
+              <CardContent className="h-[260px] sm:h-[300px] min-h-[250px] px-2 sm:px-6">
+                {(!revenueChartFiltered || revenueChartFiltered.length === 0 || revenueChartFiltered.every(p => p.revenue === 0)) ? (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No revenue in this period</div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={revenueChart} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={revenueChartFiltered} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
@@ -285,10 +477,10 @@ export default function AnalyticsDashboardPage() {
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
-              <CardHeader>
+              <CardHeader className="pb-2 sm:pb-4">
                 <CardTitle className="text-base">Payment Distribution</CardTitle>
               </CardHeader>
-              <CardContent className="h-[300px]">
+              <CardContent className="h-[260px] sm:h-[300px] min-h-[250px] px-2 sm:px-6">
                 {stats.paymentDist.every(p => p.value === 0) ? (
                   <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
                 ) : (
@@ -307,12 +499,12 @@ export default function AnalyticsDashboardPage() {
           </div>
 
           {/* ROW 2: members growth + expenses donut */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <Card className="lg:col-span-2 rounded-2xl">
-              <CardHeader>
+              <CardHeader className="pb-2 sm:pb-4">
                 <CardTitle className="text-base">Member Growth</CardTitle>
               </CardHeader>
-              <CardContent className="h-[280px]">
+              <CardContent className="h-[260px] sm:h-[280px] min-h-[250px] px-2 sm:px-6">
                 {(!memberGrowthChart || memberGrowthChart.length === 0) ? (
                   <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
                 ) : (
@@ -329,10 +521,10 @@ export default function AnalyticsDashboardPage() {
               </CardContent>
             </Card>
             <Card className="rounded-2xl">
-              <CardHeader>
+              <CardHeader className="pb-2 sm:pb-4">
                 <CardTitle className="text-base">Expense Categories</CardTitle>
               </CardHeader>
-              <CardContent className="h-[280px]">
+              <CardContent className="h-[260px] sm:h-[280px] min-h-[250px] px-2 sm:px-6">
                 {expenseByCategory.length === 0 ? (
                   <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Data not available</div>
                 ) : (
@@ -387,67 +579,8 @@ export default function AnalyticsDashboardPage() {
           </Card>
         </div>
 
-        {/* RIGHT FILTER PANEL */}
+        {/* RIGHT PANEL */}
         <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
-          <Card className="rounded-2xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-primary" />
-                <CardTitle className="text-base">Filters</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                  <Calendar className="h-3 w-3" /> Date Range
-                </label>
-                <Select value={dateRange} onValueChange={setDateRange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7">Last 7 days</SelectItem>
-                    <SelectItem value="30">Last 30 days</SelectItem>
-                    <SelectItem value="90">Last 90 days</SelectItem>
-                    <SelectItem value="365">Last year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">View</label>
-                <Tabs value={granularity} onValueChange={(v) => setGranularity(v as any)}>
-                  <TabsList className="grid grid-cols-2 w-full">
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="year">Year</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Plan</label>
-                <Select value={planFilter} onValueChange={setPlanFilter}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Plans</SelectItem>
-                    {plans.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Payment Status</label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card className="rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-4 space-y-2">
               <div className="flex items-center gap-2">
