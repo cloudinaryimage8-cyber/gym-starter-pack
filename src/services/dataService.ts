@@ -546,7 +546,14 @@ function bucketLabelsForRange(from: Date, to: Date, granularity: 'day' | 'month'
 
 export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | 'month' = 'day'): Promise<AnalyticsResult> {
   await delay();
-  const d = db();
+  const raw = db();
+  const d: MockDb = {
+    ...raw,
+    members: raw.members.filter(m => !m.is_deleted),
+    payments: raw.payments.filter(p => !p.is_deleted),
+    leads: raw.leads.filter(l => !l.is_deleted),
+    expenses: raw.expenses.filter(e => !e.is_deleted),
+  };
   const from = range.from;
   const to = range.to;
   const fromDate = new Date(`${from}T00:00:00`);
