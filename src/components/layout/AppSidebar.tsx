@@ -33,12 +33,24 @@ export function AppSidebar() {
   const collapsed = state === 'collapsed';
   const { resolved } = useGymSettings();
   const location = useLocation();
+  const demo = useDemoModeOptional();
+  const isDemo = demo?.isDemo ?? false;
 
   // Auto-close mobile sidebar on route change
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
+  const handleResetDemo = () => {
+    if (!demo) return;
+    demo.exitDemo();
+    // Re-seed fresh dataset and reset to default user
+    setTimeout(() => {
+      loadDemoDataset();
+      toast.success('Demo reset — fresh dataset loaded');
+    }, 0);
+  };
 
   return (
     <Sidebar collapsible="icon">
