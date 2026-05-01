@@ -14,6 +14,7 @@ import { Plus, Pencil, Trash2, Package, Crown, X, BarChart3 } from 'lucide-react
 import { useNavigate } from 'react-router-dom';
 import { useDemoMode } from '@/demo/DemoModeContext';
 import { ViewOnlyPill } from '@/demo/ViewOnlyPill';
+import { NoAccessCard } from '@/demo/NoAccessCard';
 
 const CATEGORIES = ['general', 'Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 'Male', 'Female', 'Couple'];
 
@@ -154,6 +155,8 @@ export default function PlansPage() {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     }
   };
+
+  if (isDemo && !can('settings', 'view')) return <NoAccessCard />;
 
   return (
     <div className="space-y-6 max-w-full">
