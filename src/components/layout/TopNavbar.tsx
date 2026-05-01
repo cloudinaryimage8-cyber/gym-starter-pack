@@ -41,9 +41,14 @@ export function TopNavbar() {
   const [confirmExit, setConfirmExit] = useState(false);
 
   const handleLoadDemo = () => {
+    const wasActive = isDemo;
     const res = loadDemoDataset();
     const { vendors, members } = res.summary;
-    toast.success(`Demo data loaded — ${vendors} vendors, ${members} members`);
+    if (wasActive) {
+      toast.success('Demo data refreshed');
+    } else {
+      toast.success(`Demo data loaded — ${vendors} vendors, ${members} members`);
+    }
   };
 
   const handleExitDemo = () => {
