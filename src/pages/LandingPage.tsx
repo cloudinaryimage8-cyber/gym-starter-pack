@@ -629,7 +629,7 @@ export default function LandingPage() {
       {/* ─── YOUTUBE SHORTS (bg secondary) ─── */}
       <YouTubeShortsSection bg="secondary" />
 
-      {/* ─── GALLERY (bg primary) ─── */}
+      {/* ─── GALLERY (bg secondary) ─── */}
       {data?.gallery && (galleryContent.items?.length ?? 0) > 0 && (() => {
         const items = galleryContent.items;
         const marked = items.filter(i => (i as any).show_on_homepage);
