@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
 } from '@/components/ui/sidebar';
 import { useGymSettings } from '@/hooks/useGymSettings';
+import { useDemoModeOptional } from '@/demo/DemoModeContext';
+import { loadDemoDataset } from '@/demo/seedAdapter';
 
 const navItems = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
@@ -30,12 +33,24 @@ export function AppSidebar() {
   const collapsed = state === 'collapsed';
   const { resolved } = useGymSettings();
   const location = useLocation();
+  const demo = useDemoModeOptional();
+  const isDemo = demo?.isDemo ?? false;
 
   // Auto-close mobile sidebar on route change
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
+  const handleResetDemo = () => {
+    if (!demo) return;
+    demo.exitDemo();
+    // Re-seed fresh dataset and reset to default user
+    setTimeout(() => {
+      loadDemoDataset();
+      toast.success('Demo reset — fresh dataset loaded');
+    }, 0);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -70,6 +85,17 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {isDemo && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={handleResetDemo}
+                    className="hover:bg-sidebar-accent/50 text-amber-600 dark:text-amber-400"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {!collapsed && <span>Reset Demo</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
