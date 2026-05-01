@@ -85,6 +85,17 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {isDemo && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={handleResetDemo}
+                    className="hover:bg-sidebar-accent/50 text-amber-600 dark:text-amber-400"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {!collapsed && <span>Reset Demo</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
