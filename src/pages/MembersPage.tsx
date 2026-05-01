@@ -22,6 +22,7 @@ import { ReminderDialog, whatsappDirect } from '@/components/ReminderDialog';
 import { useDemoMode } from '@/demo/DemoModeContext';
 import { ViewOnlyPill } from '@/demo/ViewOnlyPill';
 import { VendorFilter, useDemoVendorFilter } from '@/demo/VendorFilter';
+import { NoAccessCard } from '@/demo/NoAccessCard';
 
 type SortKey = 'name' | 'start_date' | 'expiry_date' | 'plan' | 'status';
 type SortDir = 'asc' | 'desc';
