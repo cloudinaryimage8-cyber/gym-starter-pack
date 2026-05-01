@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
 } from '@/components/ui/sidebar';
 import { useGymSettings } from '@/hooks/useGymSettings';
+import { useDemoModeOptional } from '@/demo/DemoModeContext';
+import { loadDemoDataset } from '@/demo/seedAdapter';
 
 const navItems = [
   { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
