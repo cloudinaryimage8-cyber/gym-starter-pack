@@ -348,6 +348,8 @@ export default function MembersPage() {
     return info.variant === 'expired';
   }).length ?? 0;
 
+  if (isDemo && !can('members', 'view')) return <NoAccessCard />;
+
   return (
     <div className="space-y-6 max-w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
