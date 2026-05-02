@@ -66,6 +66,8 @@ function AppLayout() {
         <Route path="settings" element={<BrandingSettingsPage />} />
         <Route path="settings/invoice" element={<InvoiceSettingsPage />} />
         <Route path="recycle" element={<RecycleBinPage />} />
+        <Route path="employee-access" element={<EmployeeAccessPage />} />
+        <Route path="permissions" element={<EmployeeAccessPage />} />
       </Routes>
     </DashboardLayout>
   );
