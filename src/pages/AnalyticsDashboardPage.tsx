@@ -334,6 +334,8 @@ export default function AnalyticsDashboardPage() {
 
   const ChartFallback = () => <Skeleton className="h-full w-full rounded-lg" />;
 
+  if (isDemo && !can('dashboard', 'view')) return <NoAccessCard />;
+
   return (
     <div className="space-y-4 md:space-y-6 pb-8 px-1 sm:px-0">
       {/* Header — mobile stacks: Title → Buttons → Filters (Tabs) */}
