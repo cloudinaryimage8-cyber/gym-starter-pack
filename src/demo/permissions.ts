@@ -5,7 +5,7 @@
  *   owner       → all access within own vendor
  *   employee    → permission-list driven, scoped to vendor
  */
-import { demoStore } from './storage';
+import { demoStore, emitDemoChange } from './storage';
 import type { DemoUser, Permission, PermissionGrant } from './types';
 
 export type Module = 'dashboard' | 'members' | 'payments' | 'leads' | 'expenses' | 'plans' | 'website' | 'recycle' | 'reports' | 'settings';
