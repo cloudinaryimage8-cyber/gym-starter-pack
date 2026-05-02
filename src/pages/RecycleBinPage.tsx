@@ -44,6 +44,7 @@ function formatTimeRemaining(expiresIso: string) {
 export default function RecycleBinPage() {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { isDemo, can } = useDemoMode();
   const [confirmDelete, setConfirmDelete] = useState<DeletedItem | null>(null);
 
   // Run cleanup on mount
