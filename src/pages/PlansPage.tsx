@@ -125,7 +125,7 @@ export default function PlansPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isDemo, can } = useDemoMode();
-  const canEdit = !isDemo || can('settings', 'edit');
+  const canEdit = !isDemo || can('plans', 'edit');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | undefined>();
 
@@ -156,7 +156,7 @@ export default function PlansPage() {
     }
   };
 
-  if (isDemo && !can('settings', 'view')) return <NoAccessCard />;
+  if (isDemo && !can('plans', 'view')) return <NoAccessCard />;
 
   return (
     <div className="space-y-6 max-w-full">
