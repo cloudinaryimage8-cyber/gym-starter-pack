@@ -186,6 +186,10 @@ export default function OwnerSummaryPage() {
   const convRate = leads.length > 0 ? Math.round((leadsConverted / leads.length) * 100) : 0;
   if (leads.length >= 5 && convRate < 20) alerts.push({ text: `Low lead conversion rate: ${convRate}%`, action: () => navigate('/app/leads/dashboard') });
 
+  if (demo.isDemo && !isOwnerLike(demo.currentUser)) {
+    return <NoAccessCard title="Owner only" message="The Owner Summary is restricted to owners." />;
+  }
+
   return (
     <div className="space-y-4 md:space-y-6 animate-fade-in px-1 sm:px-0">
       {/* Header — mobile stacks: Title → Tabs → Year */}
