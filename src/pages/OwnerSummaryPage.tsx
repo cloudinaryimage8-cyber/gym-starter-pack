@@ -16,6 +16,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 import { useDemoMode } from '@/demo/DemoModeContext';
+import { NoAccessCard } from '@/demo/NoAccessCard';
+import { isOwnerLike } from '@/demo/permissions';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
