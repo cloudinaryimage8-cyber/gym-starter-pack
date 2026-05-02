@@ -6,8 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { MessageCircle, Instagram, Save } from 'lucide-react';
+import { useDemoMode } from '@/demo/DemoModeContext';
+import { NoAccessCard } from '@/demo/NoAccessCard';
 
 export default function ContactSettingsPage() {
+  const { isDemo, can } = useDemoMode();
   const { settings, isLoading, upsertSettings } = useContactSettings();
 
   const [whatsappNumber, setWhatsappNumber] = useState('');
