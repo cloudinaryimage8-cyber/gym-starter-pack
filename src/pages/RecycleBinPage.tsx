@@ -11,6 +11,8 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useDemoMode } from '@/demo/DemoModeContext';
+import { NoAccessCard } from '@/demo/NoAccessCard';
 
 const TYPE_META: Record<RecycleEntityType, { label: string; icon: typeof Users; color: string }> = {
   member: { label: 'Members', icon: Users, color: 'text-blue-500' },
