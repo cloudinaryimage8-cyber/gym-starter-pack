@@ -81,3 +81,40 @@ export function isVendorLocked(vendorId: string | null): boolean {
   const locks = demoStore.getVendorLocks();
   return Boolean(locks[vendorId]);
 }
+
+/** Get permissions for a single employee user. Returns [] if none granted. */
+export function getEmployeePermissions(userId: string): Permission[] {
+  const grant = demoStore.getPermissions().find(p => p.user_id === userId);
+  return grant?.permissions ?? [];
+}
+
+/**
+ * Toggle a single permission for an employee user. Owner/super_admin are no-ops.
+ * Persists to localStorage and emits a change event for reactive UI.
+ */
+export function setEmployeePermission(userId: string, perm: Permission, enabled: boolean): void {
+  const users = demoStore.getUsers();
+  const user = users.find(u => u.id === userId);
+  if (!user || user.role !== 'employee') return;
+
+  const all = demoStore.getPermissions();
+  let grant = all.find(p => p.user_id === userId);
+  if (!grant) {
+    grant = { user_id: userId, vendor_id: user.vendor_id ?? '', permissions: [] };
+    all.push(grant);
+  }
+  const has = grant.permissions.includes(perm);
+  if (enabled && !has) grant.permissions = [...grant.permissions, perm];
+  if (!enabled && has) grant.permissions = grant.permissions.filter(p => p !== perm);
+
+  demoStore.setPermissions(all);
+  // Lazy import to avoid cycles.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { emitDemoChange } = require('./storage');
+  emitDemoChange();
+}
+
+/** True only for owner / super_admin. */
+export function isOwnerLike(user: DemoUser | null): boolean {
+  return !!user && (user.role === 'owner' || user.role === 'super_admin');
+}
