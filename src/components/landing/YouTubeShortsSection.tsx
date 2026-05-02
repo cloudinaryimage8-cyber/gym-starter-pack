@@ -72,7 +72,7 @@ export function YouTubeShortsSection({ bg = 'primary' }: { bg?: 'primary' | 'sec
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
 
-  const ids = SHORTS.map(getId).filter(Boolean) as string[];
+  const ids = SHORTS.map(getShortId).filter(Boolean) as string[];
 
   // Mobile auto-scroll
   useEffect(() => {
