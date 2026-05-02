@@ -36,6 +36,7 @@ import PublicProductDetailPage from "./pages/PublicProductDetailPage";
 import OwnerSummaryPage from "./pages/OwnerSummaryPage";
 import InvoiceSettingsPage from "./pages/InvoiceSettingsPage";
 import RecycleBinPage from "./pages/RecycleBinPage";
+import EmployeeAccessPage from "./pages/EmployeeAccessPage";
 import { useEffect } from "react";
 import { runRecycleCleanup } from "./services/dataService";
 
