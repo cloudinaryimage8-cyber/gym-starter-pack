@@ -39,6 +39,19 @@ export function AppSidebar() {
   const location = useLocation();
   const demo = useDemoModeOptional();
   const isDemo = demo?.isDemo ?? false;
+  const ownerLike = !isDemo || isOwnerLike(demo?.currentUser ?? null);
+
+  // Filter sidebar items by RBAC. Owner/non-demo always see everything.
+  const visibleItems = useMemo(() => {
+    return navItems.filter(item => {
+      if (item.ownerOnly) return ownerLike;
+      if (!isDemo) return true;
+      if (ownerLike) return true;
+      if (!item.module) return true;
+      return demo?.can(item.module, 'view') ?? false;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDemo, ownerLike, demo?.changeTick, demo?.currentUser?.id]);
 
   // Auto-close mobile sidebar on route change
   useEffect(() => {
