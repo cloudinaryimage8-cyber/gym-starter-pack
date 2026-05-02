@@ -67,6 +67,8 @@ export default function WebsiteBuilderPage() {
 
   const publicUrl = `${window.location.origin}/`;
 
+  if (isDemo && !can('website', 'view')) return <NoAccessCard />;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
