@@ -125,7 +125,7 @@ export default function PlansPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isDemo, can } = useDemoMode();
-  const canEdit = !isDemo || can('settings', 'edit');
+  const canEdit = !isDemo || can('plans', 'edit');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | undefined>();
 
