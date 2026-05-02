@@ -25,6 +25,7 @@ import {
   PieChart, Pie, Cell, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
 import { useDemoMode } from '@/demo/DemoModeContext';
+import { NoAccessCard } from '@/demo/NoAccessCard';
 import { ViewOnlyPill } from '@/demo/ViewOnlyPill';
 import { VendorFilter, useDemoVendorFilter } from '@/demo/VendorFilter';
 
