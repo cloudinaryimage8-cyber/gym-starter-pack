@@ -108,9 +108,6 @@ export function setEmployeePermission(userId: string, perm: Permission, enabled:
   if (!enabled && has) grant.permissions = grant.permissions.filter(p => p !== perm);
 
   demoStore.setPermissions(all);
-  // Lazy import to avoid cycles.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { emitDemoChange } = require('./storage');
   emitDemoChange();
 }
 
