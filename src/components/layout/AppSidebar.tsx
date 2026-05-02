@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NavLink } from '@/components/NavLink';
@@ -12,20 +12,24 @@ import {
 import { useGymSettings } from '@/hooks/useGymSettings';
 import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
+import { isOwnerLike, type Module } from '@/demo/permissions';
 
-const navItems = [
-  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard },
-  { title: 'Owner Summary', url: '/app/owner-summary', icon: Sparkles },
-  { title: 'Members', url: '/app/members', icon: Users },
-  { title: 'Plans', url: '/app/plans', icon: Package },
-  { title: 'Payments', url: '/app/payments', icon: CreditCard },
-  { title: 'Leads', url: '/app/leads', icon: UserPlus },
-  { title: 'Expenses', url: '/app/expenses', icon: Receipt },
-  { title: 'Website', url: '/app/website', icon: Globe },
-  { title: 'Contact', url: '/app/contact', icon: MessageCircle },
-  { title: 'Settings', url: '/app/settings', icon: Settings },
-  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText },
-  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2 },
+type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean };
+
+const navItems: NavItem[] = [
+  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { title: 'Owner Summary', url: '/app/owner-summary', icon: Sparkles, ownerOnly: true },
+  { title: 'Members', url: '/app/members', icon: Users, module: 'members' },
+  { title: 'Plans', url: '/app/plans', icon: Package, module: 'plans' },
+  { title: 'Payments', url: '/app/payments', icon: CreditCard, module: 'payments' },
+  { title: 'Leads', url: '/app/leads', icon: UserPlus, module: 'leads' },
+  { title: 'Expenses', url: '/app/expenses', icon: Receipt, module: 'expenses' },
+  { title: 'Website', url: '/app/website', icon: Globe, module: 'website' },
+  { title: 'Contact', url: '/app/contact', icon: MessageCircle, module: 'settings' },
+  { title: 'Settings', url: '/app/settings', icon: Settings, module: 'settings' },
+  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText, module: 'settings' },
+  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2, module: 'recycle' },
+  { title: 'Employee Access', url: '/app/employee-access', icon: ShieldCheck, ownerOnly: true },
 ];
 
 export function AppSidebar() {
