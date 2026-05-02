@@ -101,6 +101,8 @@ export default function RecycleBinPage() {
     }
   };
 
+  if (isDemo && !can('recycle', 'view')) return <NoAccessCard />;
+
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
