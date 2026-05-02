@@ -6,11 +6,15 @@ import { SectionHeader } from '@/components/PremiumCard';
 const SHORTS = [
   'https://www.youtube.com/shorts/Z6AKEtAj1d4',
   'https://www.youtube.com/shorts/lzB4ZPX_jbw',
-  'https://www.youtube.com/shorts/ieLmv0MOqoc',
+  'https://www.youtube.com/shorts/ieLmv0MOwoc',
+  'https://www.youtube.com/shorts/ieLmv0MOeoc',
+  'https://www.youtube.com/shorts/ieLmv0MOtoc',
 ];
 
-function getId(url: string): string | null {
-  const m = url.match(/(?:shorts\/|watch\?v=|embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+// STRICT: only accept URLs containing "/shorts/" — ignore everything else
+function getShortId(url: string): string | null {
+  if (!url.includes('/shorts/')) return null;
+  const m = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
   return m ? m[1] : null;
 }
 
@@ -68,7 +72,7 @@ export function YouTubeShortsSection({ bg = 'primary' }: { bg?: 'primary' | 'sec
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
 
-  const ids = SHORTS.map(getId).filter(Boolean) as string[];
+  const ids = SHORTS.map(getShortId).filter(Boolean) as string[];
 
   // Mobile auto-scroll
   useEffect(() => {
