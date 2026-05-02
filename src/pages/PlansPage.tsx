@@ -156,7 +156,7 @@ export default function PlansPage() {
     }
   };
 
-  if (isDemo && !can('settings', 'view')) return <NoAccessCard />;
+  if (isDemo && !can('plans', 'view')) return <NoAccessCard />;
 
   return (
     <div className="space-y-6 max-w-full">
