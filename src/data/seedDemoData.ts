@@ -100,11 +100,15 @@ export interface Expense {
 }
 
 export type Permission =
+  | 'dashboard:view' | 'dashboard:edit'
   | 'members:view' | 'members:edit'
   | 'payments:view' | 'payments:edit'
   | 'leads:view' | 'leads:edit'
   | 'expenses:view' | 'expenses:edit'
-  | 'reports:view' | 'settings:edit';
+  | 'plans:view' | 'plans:edit'
+  | 'website:view' | 'website:edit'
+  | 'recycle:view' | 'recycle:edit'
+  | 'reports:view' | 'settings:view' | 'settings:edit';
 
 export interface PermissionGrant {
   user_id: string;
