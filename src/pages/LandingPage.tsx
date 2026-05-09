@@ -605,26 +605,6 @@ export default function LandingPage() {
         );
       })()}
 
-      {/* ─── VIDEO TESTIMONIALS (bg primary) — only 3 video shorts on landing ─── */}
-      {data?.testimonials && (testimonialsContent.items?.length ?? 0) > 0 && (() => {
-        const allItems = testimonialsContent.items;
-        const videoItems = allItems.filter(t => !!t.video_url);
-        const marked = videoItems.filter(i => (i as any).show_on_homepage);
-        const rest = videoItems.filter(i => !marked.includes(i));
-        const homepageVideos = [...marked, ...rest].slice(0, 3);
-        // Show "View All" if there's any extra content (more videos OR text reviews exist)
-        const showViewAll = videoItems.length > 3 || allItems.some(t => !t.video_url);
-        if (homepageVideos.length === 0) return null;
-        return (
-          <VideoTestimonialsSection
-            items={homepageVideos}
-            title={testimonialsContent.title || 'What Our Members Say'}
-            subtitle={testimonialsContent.subtitle}
-            showViewAll={showViewAll}
-            bg="primary"
-          />
-        );
-      })()}
 
       {/* ─── YOUTUBE VIDEOS (bg secondary) — sourced from dashboard testimonials ─── */}
       {(() => {
