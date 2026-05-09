@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SectionHeader } from '@/components/PremiumCard';
 
+const YT_PLAY_EVENT = 'gymos:yt-video-play';
+
 /** Extract YouTube ID strictly from /shorts/ URLs */
 function getShortsId(url: string): string | null {
   if (!url) return null;
