@@ -36,6 +36,7 @@ export function YouTubeShortsCarousel({
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
+  const instanceId = useRef(`yt-shorts-${Math.random().toString(36).slice(2)}`).current;
 
   const goTo = useCallback(
     (next: number) => {
@@ -46,6 +47,22 @@ export function YouTubeShortsCarousel({
     },
     [ids.length]
   );
+
+  const handlePlay = useCallback(() => {
+    setPlaying(true);
+    window.dispatchEvent(new CustomEvent(YT_PLAY_EVENT, { detail: instanceId }));
+  }, [instanceId]);
+
+  // Stop when another carousel starts a video
+  useEffect(() => {
+    const onOtherPlay = (e: Event) => {
+      const id = (e as CustomEvent).detail;
+      if (id !== instanceId) setPlaying(false);
+    };
+    window.addEventListener(YT_PLAY_EVENT, onOtherPlay);
+    return () => window.removeEventListener(YT_PLAY_EVENT, onOtherPlay);
+  }, [instanceId]);
+
 
   // Auto carousel — pause when video is playing or user interacting
   useEffect(() => {
