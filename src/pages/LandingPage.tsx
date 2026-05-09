@@ -22,7 +22,6 @@ import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
 import { PricingSection } from '@/components/landing/PricingSection';
 import { ReviewsCarousel } from '@/components/landing/ReviewsCarousel';
 import { BranchesCarousel } from '@/components/landing/BranchesCarousel';
-import { VideoTestimonialsSection } from '@/components/landing/VideoTestimonialsSection';
 import { AchievementsSection } from '@/components/landing/AchievementsSection';
 import { ServicesSection } from '@/components/landing/ServicesSection';
 import { FooterSocial } from '@/components/landing/FooterSocial';
