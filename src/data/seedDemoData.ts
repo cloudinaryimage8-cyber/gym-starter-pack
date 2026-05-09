@@ -24,6 +24,7 @@
  */
 
 import { addDays, subDays, subMonths, format } from 'date-fns';
+import { buildTrainerSeed } from './seedTrainerData';
 
 // ─── Types ─────────────────────────────────────────────────────
 export type Role = 'super_admin' | 'owner' | 'employee';
@@ -106,6 +107,7 @@ export type Permission =
   | 'leads:view' | 'leads:edit'
   | 'expenses:view' | 'expenses:edit'
   | 'plans:view' | 'plans:edit'
+  | 'trainers:view' | 'trainers:edit'
   | 'website:view' | 'website:edit'
   | 'recycle:view' | 'recycle:edit'
   | 'reports:view' | 'settings:view' | 'settings:edit';
@@ -114,6 +116,42 @@ export interface PermissionGrant {
   user_id: string;
   vendor_id: string;
   permissions: Permission[];
+}
+
+export interface Trainer {
+  id: string;
+  vendor_id: string;
+  name: string;
+  phone: string;
+  specialization: string;
+  experience: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface TrainerAssignment {
+  id: string;
+  vendor_id: string;
+  trainer_id: string;
+  member_id: string;
+  plan_type: 'PT' | 'regular';
+  start_date: string;
+  end_date: string;
+  total_sessions: number;
+  sessions_completed: number;
+  price: number;
+  created_at: string;
+}
+
+export interface TrainerSession {
+  id: string;
+  vendor_id: string;
+  trainer_id: string;
+  member_id: string;
+  assignment_id: string;
+  date: string;
+  status: 'completed' | 'missed';
+  created_at: string;
 }
 
 export interface SeedDataset {
@@ -125,6 +163,9 @@ export interface SeedDataset {
   leads: Lead[];
   expenses: Expense[];
   permissions: PermissionGrant[];
+  trainers: Trainer[];
+  trainer_assignments: TrainerAssignment[];
+  trainer_sessions: TrainerSession[];
 }
 
 // ─── Deterministic helpers ─────────────────────────────────────
@@ -209,6 +250,9 @@ export function seedDemoData(): SeedDataset {
   const leads: Lead[] = [];
   const expenses: Expense[] = [];
   const permissions: PermissionGrant[] = [];
+  const trainers: Trainer[] = [];
+  const trainer_assignments: TrainerAssignment[] = [];
+  const trainer_sessions: TrainerSession[] = [];
 
   // 1. Super Admin
   users.push({
@@ -403,7 +447,15 @@ export function seedDemoData(): SeedDataset {
     }
   });
 
-  return { users, vendors, plans, members, payments, leads, expenses, permissions };
+  // ─── Trainers (Personal Training) per vendor ───
+  // Delegated to seedTrainerData.ts so the trainer module can be
+  // maintained independently while sharing the same id namespace.
+  const trainerSeed = buildTrainerSeed(vendors, members, { now, idFactory: id });
+  trainers.push(...trainerSeed.trainers);
+  trainer_assignments.push(...trainerSeed.trainer_assignments);
+  trainer_sessions.push(...trainerSeed.trainer_sessions);
+
+  return { users, vendors, plans, members, payments, leads, expenses, permissions, trainers, trainer_assignments, trainer_sessions };
 }
 
 // ─── Convenience selectors (multi-tenant filtering) ─────────────
@@ -421,6 +473,10 @@ export function summarizeDataset(d: SeedDataset) {
     leads: d.leads.length,
     expenses: d.expenses.length,
     permissions: d.permissions.length,
+    trainers: d.trainers.length,
+    pt_assignments: d.trainer_assignments.length,
+    pt_sessions: d.trainer_sessions.length,
+    pt_revenue: d.trainer_assignments.reduce((s, a) => s + a.price, 0),
     revenue_paid: d.payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0),
     revenue_overdue: d.payments.filter(p => p.status === 'overdue').reduce((s, p) => s + p.amount, 0),
   };

@@ -28,6 +28,7 @@ import { ServicesSection } from '@/components/landing/ServicesSection';
 import { FooterSocial } from '@/components/landing/FooterSocial';
 import { ProductsBanner } from '@/components/landing/ProductsBanner';
 import { YouTubeShortsSection } from '@/components/landing/YouTubeShortsSection';
+import { YouTubeShortsCarousel } from '@/components/landing/YouTubeShortsCarousel';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
@@ -626,8 +627,22 @@ export default function LandingPage() {
         );
       })()}
 
-      {/* ─── YOUTUBE SHORTS (bg secondary) ─── */}
-      <YouTubeShortsSection bg="secondary" />
+      {/* ─── YOUTUBE VIDEOS (bg secondary) — sourced from dashboard testimonials ─── */}
+      {(() => {
+        const videoUrls = (testimonialsContent.items || [])
+          .map(t => t.video_url)
+          .filter((u): u is string => !!u && /(?:youtu\.be\/|youtube\.com\/)/.test(u) && !/\/shorts\//.test(u));
+        if (videoUrls.length === 0) return null;
+        return <YouTubeShortsSection videos={videoUrls} bg="secondary" />;
+      })()}
+
+      {/* ─── YOUTUBE SHORTS (vertical carousel) — dashboard-driven ─── */}
+      {(() => {
+        const shortsLinks = (testimonialsContent.youtube_shorts_links || [])
+          .filter((u): u is string => !!u && /\/shorts\//.test(u));
+        if (shortsLinks.length === 0) return null;
+        return <YouTubeShortsCarousel links={shortsLinks} bg="primary" />;
+      })()}
 
       {/* ─── GALLERY (bg secondary) ─── */}
       {data?.gallery && (galleryContent.items?.length ?? 0) > 0 && (() => {
