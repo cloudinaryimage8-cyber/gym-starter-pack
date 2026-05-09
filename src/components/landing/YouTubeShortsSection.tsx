@@ -1,7 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SectionHeader } from '@/components/PremiumCard';
+
+const YT_PLAY_EVENT = 'gymos:yt-video-play';
 
 // Accept any YouTube URL form (watch, youtu.be, shorts, embed)
 function getYouTubeId(url: string): string | null {
