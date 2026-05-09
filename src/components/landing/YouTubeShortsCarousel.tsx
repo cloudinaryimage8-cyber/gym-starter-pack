@@ -128,7 +128,7 @@ export function YouTubeShortsCarousel({
                 {!playing ? (
                   <button
                     type="button"
-                    onClick={() => setPlaying(true)}
+                    onClick={handlePlay}
                     className="group absolute inset-0 w-full h-full cursor-pointer"
                     aria-label="Play short"
                   >
@@ -151,7 +151,7 @@ export function YouTubeShortsCarousel({
                   </button>
                 ) : (
                   <iframe
-                    src={`https://www.youtube.com/embed/${currentId}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&loop=1&playlist=${currentId}`}
+                    src={`https://www.youtube.com/embed/${currentId}?autoplay=1&playsinline=1&rel=0&modestbranding=1&loop=1&playlist=${currentId}`}
                     className="absolute inset-0 w-full h-full"
                     style={{ border: 'none' }}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
