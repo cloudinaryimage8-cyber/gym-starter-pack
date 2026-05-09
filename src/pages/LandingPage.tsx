@@ -623,6 +623,21 @@ export default function LandingPage() {
         return <YouTubeShortsCarousel links={shortsLinks} bg="primary" />;
       })()}
 
+      {/* ─── VIEW ALL TESTIMONIALS ─── */}
+      {data?.testimonials && (testimonialsContent.items?.length ?? 0) > 0 && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg-primary)' }}>
+          <div className="max-w-7xl mx-auto text-center">
+            <Link to="/testimonials">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+                <Button size="lg" className="rounded-xl h-12 px-8 font-semibold shadow-lg shadow-primary/20" style={{ background: 'var(--button-bg)', color: 'var(--button-text)' }}>
+                  View All Testimonials <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </motion.div>
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* ─── GALLERY (bg secondary) ─── */}
       {data?.gallery && (galleryContent.items?.length ?? 0) > 0 && (() => {
         const items = galleryContent.items;
