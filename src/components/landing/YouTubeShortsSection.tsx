@@ -89,7 +89,13 @@ export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subti
           subtitle={subtitle || 'Real stories, real transformations.'}
         />
 
-        <div className="relative mt-8">
+        <div
+          className="relative mt-8"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Card */}
           <div
             className="relative w-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30 bg-black"
@@ -107,7 +113,7 @@ export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subti
                 {!playing ? (
                   <button
                     type="button"
-                    onClick={() => setPlaying(true)}
+                    onClick={handlePlay}
                     className="group absolute inset-0 w-full h-full cursor-pointer"
                     aria-label="Play video"
                   >
@@ -130,7 +136,7 @@ export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subti
                   </button>
                 ) : (
                   <iframe
-                    src={`https://www.youtube.com/embed/${currentId}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`}
+                    src={`https://www.youtube.com/embed/${currentId}?autoplay=1&playsinline=1&rel=0&modestbranding=1`}
                     className="absolute inset-0 w-full h-full"
                     style={{ border: 'none' }}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
