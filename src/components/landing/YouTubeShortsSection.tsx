@@ -18,12 +18,16 @@ interface Props {
   bg?: 'primary' | 'secondary';
   title?: string;
   subtitle?: string;
+  /** Auto-advance interval (ms). 0 disables. */
+  interval?: number;
 }
 
-export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subtitle }: Props) {
+export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subtitle, interval = 4000 }: Props) {
   const ids = Array.from(new Set(videos.map(getYouTubeId).filter(Boolean) as string[]));
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const instanceId = useRef(`yt-std-${Math.random().toString(36).slice(2)}`).current;
 
   const goTo = useCallback((next: number) => {
     if (ids.length === 0) return;
@@ -31,6 +35,43 @@ export function YouTubeShortsSection({ videos = [], bg = 'primary', title, subti
     setIndex(n);
     setPlaying(false); // stop previous video
   }, [ids.length]);
+
+  const handlePlay = useCallback(() => {
+    setPlaying(true);
+    window.dispatchEvent(new CustomEvent(YT_PLAY_EVENT, { detail: instanceId }));
+  }, [instanceId]);
+
+  // Stop when another carousel starts a video
+  useEffect(() => {
+    const onOtherPlay = (e: Event) => {
+      const id = (e as CustomEvent).detail;
+      if (id !== instanceId) setPlaying(false);
+    };
+    window.addEventListener(YT_PLAY_EVENT, onOtherPlay);
+    return () => window.removeEventListener(YT_PLAY_EVENT, onOtherPlay);
+  }, [instanceId]);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (!interval || ids.length < 2 || playing || paused) return;
+    const t = setInterval(() => setIndex(i => (i + 1) % ids.length), interval);
+    return () => clearInterval(t);
+  }, [interval, ids.length, playing, paused]);
+
+  // Touch swipe
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setPaused(true);
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) goTo(index + (dx < 0 ? 1 : -1));
+    touchStartX.current = null;
+    setTimeout(() => setPaused(false), 1500);
+  };
+
 
   if (ids.length === 0) return null;
 
