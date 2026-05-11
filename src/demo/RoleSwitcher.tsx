@@ -20,6 +20,9 @@ import type { DemoUser, Vendor } from './types';
 
 export function RoleSwitcher() {
   const { isDemo, currentUser, users, vendors, setCurrentUser } = useDemoMode();
+  const superOwners = useMemo(() => {
+    try { return require('./storage').demoStore.getSuperOwners() as DemoUser[]; } catch { return []; }
+  }, [users]);
 
   const grouped = useMemo(() => {
     const superAdmins = users.filter(u => u.role === 'super_admin');
@@ -42,7 +45,7 @@ export function RoleSwitcher() {
   const vendorById = new Map<string, Vendor>(vendors.map(v => [v.id, v]));
 
   const label = currentUser
-    ? `${currentUser.name.split(' ')[0]} · ${currentUser.role}`
+    ? `${currentUser.name.split(' ')[0]} · ${currentUser.role.replace('_', ' ')}`
     : 'Switch user';
 
   return (
