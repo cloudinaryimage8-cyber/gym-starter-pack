@@ -179,6 +179,8 @@ export interface SeedDataset {
   trainers: Trainer[];
   trainer_assignments: TrainerAssignment[];
   trainer_sessions: TrainerSession[];
+  super_owners: User[];
+  super_owner_access: SuperOwnerAccess[];
 }
 
 // ─── Deterministic helpers ─────────────────────────────────────
