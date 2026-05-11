@@ -20,10 +20,8 @@ import { demoStore } from './storage';
 import type { DemoUser, Vendor } from './types';
 
 export function RoleSwitcher() {
-  const { isDemo, currentUser, users, vendors, setCurrentUser } = useDemoMode();
-  const superOwners = useMemo(() => {
-    try { return require('./storage').demoStore.getSuperOwners() as DemoUser[]; } catch { return []; }
-  }, [users]);
+  const { isDemo, currentUser, users, vendors, setCurrentUser, changeTick } = useDemoMode();
+  const superOwners = useMemo(() => demoStore.getSuperOwners(), [changeTick]);
 
   const grouped = useMemo(() => {
     const superAdmins = users.filter(u => u.role === 'super_admin');
