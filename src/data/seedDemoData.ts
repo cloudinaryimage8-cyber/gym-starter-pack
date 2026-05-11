@@ -27,7 +27,14 @@ import { addDays, subDays, subMonths, format } from 'date-fns';
 import { buildTrainerSeed } from './seedTrainerData';
 
 // ─── Types ─────────────────────────────────────────────────────
-export type Role = 'super_admin' | 'owner' | 'employee';
+export type Role = 'super_admin' | 'super_owner' | 'owner' | 'employee';
+
+export interface SuperOwnerAccess {
+  id: string;
+  super_owner_id: string;
+  vendor_id: string;
+  assigned_at: string;
+}
 export type MemberStatus = 'active' | 'expired' | 'new';
 export type PaymentStatus = 'paid' | 'pending' | 'overdue';
 export type LeadStatus = 'new' | 'contacted' | 'converted';
