@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDemoMode } from './DemoModeContext';
+import { demoStore } from './storage';
 import type { DemoUser, Vendor } from './types';
 
 export function RoleSwitcher() {
