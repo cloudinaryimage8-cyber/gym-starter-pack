@@ -15,6 +15,7 @@ import type {
   DemoExpense,
   PermissionGrant,
   VendorLockState,
+  SuperOwnerAccess,
 } from './types';
 import type { Trainer, TrainerAssignment, TrainerSession } from '@/data/seedDemoData';
 
@@ -33,6 +34,9 @@ export const DEMO_KEYS = {
   vendorLocks:  'gymos_vendor_locks',
   currentUser:  'gymos_current_user_id',
   isDemoLoaded: 'gymos_is_demo_loaded',
+  superOwners:  'gymos_super_owners',
+  superOwnerAccess: 'gymos_super_owner_access',
+  superOwnerActiveVendor: 'gymos_super_owner_active_vendor',
 } as const;
 
 const isBrowser = typeof window !== 'undefined';
