@@ -74,6 +74,8 @@ function AppLayout() {
         <Route path="recycle" element={<RecycleBinPage />} />
         <Route path="employee-access" element={<EmployeeAccessPage />} />
         <Route path="permissions" element={<EmployeeAccessPage />} />
+        <Route path="super-owner-dashboard" element={<SuperOwnerDashboardPage />} />
+        <Route path="super-owners" element={<SuperOwnersAdminPage />} />
       </Routes>
     </DashboardLayout>
   );
