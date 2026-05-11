@@ -14,22 +14,24 @@ import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
 import { isOwnerLike, type Module } from '@/demo/permissions';
 
-type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean };
+type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean; superAdminOnly?: boolean; superOwnerOnly?: boolean; hideForSuperOwner?: boolean };
 
 const navItems: NavItem[] = [
-  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { title: 'Super Owner Dashboard', url: '/app/super-owner-dashboard', icon: Network, superOwnerOnly: true },
+  { title: 'Super Owners', url: '/app/super-owners', icon: Building2, superAdminOnly: true },
+  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard, module: 'dashboard', hideForSuperOwner: true },
   { title: 'Owner Summary', url: '/app/owner-summary', icon: Sparkles, ownerOnly: true },
-  { title: 'Members', url: '/app/members', icon: Users, module: 'members' },
-  { title: 'Plans', url: '/app/plans', icon: Package, module: 'plans' },
-  { title: 'Payments', url: '/app/payments', icon: CreditCard, module: 'payments' },
-  { title: 'Trainers', url: '/app/trainers', icon: UserCog, module: 'trainers' },
-  { title: 'Leads', url: '/app/leads', icon: UserPlus, module: 'leads' },
-  { title: 'Expenses', url: '/app/expenses', icon: Receipt, module: 'expenses' },
-  { title: 'Website', url: '/app/website', icon: Globe, module: 'website' },
-  { title: 'Contact', url: '/app/contact', icon: MessageCircle, module: 'settings' },
-  { title: 'Settings', url: '/app/settings', icon: Settings, module: 'settings' },
-  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText, module: 'settings' },
-  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2, module: 'recycle' },
+  { title: 'Members', url: '/app/members', icon: Users, module: 'members', hideForSuperOwner: true },
+  { title: 'Plans', url: '/app/plans', icon: Package, module: 'plans', hideForSuperOwner: true },
+  { title: 'Payments', url: '/app/payments', icon: CreditCard, module: 'payments', hideForSuperOwner: true },
+  { title: 'Trainers', url: '/app/trainers', icon: UserCog, module: 'trainers', hideForSuperOwner: true },
+  { title: 'Leads', url: '/app/leads', icon: UserPlus, module: 'leads', hideForSuperOwner: true },
+  { title: 'Expenses', url: '/app/expenses', icon: Receipt, module: 'expenses', hideForSuperOwner: true },
+  { title: 'Website', url: '/app/website', icon: Globe, module: 'website', hideForSuperOwner: true },
+  { title: 'Contact', url: '/app/contact', icon: MessageCircle, module: 'settings', hideForSuperOwner: true },
+  { title: 'Settings', url: '/app/settings', icon: Settings, module: 'settings', hideForSuperOwner: true },
+  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText, module: 'settings', hideForSuperOwner: true },
+  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2, module: 'recycle', hideForSuperOwner: true },
   { title: 'Employee Access', url: '/app/employee-access', icon: ShieldCheck, ownerOnly: true },
 ];
 
@@ -40,19 +42,25 @@ export function AppSidebar() {
   const location = useLocation();
   const demo = useDemoModeOptional();
   const isDemo = demo?.isDemo ?? false;
-  const ownerLike = !isDemo || isOwnerLike(demo?.currentUser ?? null);
+  const role = demo?.currentUser?.role ?? null;
+  const isSuperAdmin = role === 'super_admin';
+  const isSuperOwner = role === 'super_owner';
+  const ownerLike = !isDemo || isOwnerLike(demo?.currentUser ?? null) || isSuperOwner;
 
-  // Filter sidebar items by RBAC. Owner/non-demo always see everything.
+  // Filter sidebar items by role + RBAC.
   const visibleItems = useMemo(() => {
     return navItems.filter(item => {
-      if (item.ownerOnly) return ownerLike;
+      if (item.superAdminOnly) return isDemo && isSuperAdmin;
+      if (item.superOwnerOnly) return isDemo && isSuperOwner;
+      if (isSuperOwner && item.hideForSuperOwner) return false;
+      if (item.ownerOnly) return ownerLike && !isSuperOwner;
       if (!isDemo) return true;
-      if (ownerLike) return true;
+      if (isOwnerLike(demo?.currentUser ?? null)) return true;
       if (!item.module) return true;
       return demo?.can(item.module, 'view') ?? false;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDemo, ownerLike, demo?.changeTick, demo?.currentUser?.id]);
+  }, [isDemo, ownerLike, isSuperAdmin, isSuperOwner, demo?.changeTick, demo?.currentUser?.id]);
 
   // Auto-close mobile sidebar on route change
   useEffect(() => {
