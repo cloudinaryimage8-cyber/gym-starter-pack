@@ -71,6 +71,21 @@ export function RoleSwitcher() {
             ))}
           </>
         )}
+        {superOwners.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Super Owners</DropdownMenuLabel>
+            {superOwners.map(u => (
+              <UserRow
+                key={u.id}
+                user={u}
+                vendor={null}
+                active={currentUser?.id === u.id}
+                onSelect={() => setCurrentUser(u.id)}
+              />
+            ))}
+          </>
+        )}
         {vendors.map(vendor => {
           const vUsers = grouped.byVendor.get(vendor.id) ?? [];
           if (vUsers.length === 0) return null;
