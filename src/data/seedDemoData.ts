@@ -472,8 +472,8 @@ export function seedDemoData(): SeedDataset {
 
   // ─── Super Owners (multi-gym managers) ───
   const SUPER_OWNER_DEFS = [
-    { id: 'super_owner_1', name: 'Rahul Fitness Group',  email: 'rahul@fitnessgroup.in',  vendors: ['vendor_1','vendor_2','vendor_3'] },
-    { id: 'super_owner_2', name: 'Apex Wellness Holdings', email: 'ops@apexwellness.in',   vendors: ['vendor_3','vendor_4','vendor_5'] },
+    { id: 'super_owner_1', name: 'Rahul Fitness Group',  email: 'rahul@fitnessgroup.in',  vendors: ['vendor_1','vendor_2','vendor_3','vendor_4'] },
+    { id: 'super_owner_2', name: 'Apex Wellness Holdings', email: 'ops@apexwellness.in',   vendors: ['vendor_2','vendor_3','vendor_4','vendor_5'] },
     { id: 'super_owner_3', name: 'Singh Sports Ventures', email: 'singh@sportsvc.in',     vendors: ['vendor_1','vendor_4'] },
     { id: 'super_owner_4', name: 'Mehta Health Network',  email: 'mehta@healthnet.in',    vendors: ['vendor_2','vendor_5'] },
     { id: 'super_owner_5', name: 'PowerPro Federation',   email: 'admin@powerpro.in',     vendors: ['vendor_1','vendor_5'] },
