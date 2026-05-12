@@ -54,8 +54,17 @@ export interface ProductsContent {
 }
 export interface AchievementItem { title: string; description?: string; image_url?: string; }
 export interface AchievementsContent { title?: string; subtitle?: string; items: AchievementItem[]; }
+export interface PopupContent {
+  is_enabled?: boolean;
+  title?: string;
+  message?: string;
+  cta_text?: string;
+  cta_link?: string;
+  image_url?: string;
+  theme?: 'light' | 'dark' | 'gradient' | 'offer';
+}
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats' | 'footer_social' | 'supplements' | 'achievements' | 'products';
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats' | 'footer_social' | 'supplements' | 'achievements' | 'products' | 'popup';
 
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: SectionKey; is_enabled: boolean;
