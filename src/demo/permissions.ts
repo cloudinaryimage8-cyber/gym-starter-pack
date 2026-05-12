@@ -7,6 +7,7 @@
  */
 import { demoStore, emitDemoChange } from './storage';
 import type { DemoUser, Permission, PermissionGrant } from './types';
+import { getSuperOwnerPermission } from './superOwnerPermissions';
 
 export type Module = 'dashboard' | 'members' | 'payments' | 'leads' | 'expenses' | 'plans' | 'website' | 'recycle' | 'reports' | 'settings' | 'trainers';
 export type Action = 'view' | 'edit';
@@ -61,10 +62,6 @@ export function checkPermission(user: DemoUser | null, module: Module, action: A
   if (user.role === 'super_owner') {
     const activeVendor = demoStore.getSuperOwnerActiveVendor();
     if (activeVendor) {
-      // Lazy import to avoid circular deps.
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { getSuperOwnerPermission } = require('./superOwnerPermissions') as
-        typeof import('./superOwnerPermissions');
       const perm = getSuperOwnerPermission(user.id, activeVendor);
       const moduleEnabled = (perm.modules as Record<string, boolean>)[module] ?? false;
       if (!moduleEnabled) return false;
