@@ -13,7 +13,7 @@ import { useGymSettings } from '@/hooks/useGymSettings';
 import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
 import { isOwnerLike, type Module } from '@/demo/permissions';
-import { getActiveSuperOwnerVendor } from '@/demo/superOwnerService';
+import { getActiveSuperOwnerVendor, setActiveSuperOwnerVendor } from '@/demo/superOwnerService';
 import { canSuperOwnerAccess, type SuperOwnerModule } from '@/demo/superOwnerPermissions';
 
 type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean; superAdminOnly?: boolean; superOwnerOnly?: boolean; hideForSuperOwner?: boolean };
@@ -134,8 +134,6 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     onClick={() => {
                       // exit owner-view back to super-owner dashboard
-                      // eslint-disable-next-line @typescript-eslint/no-var-requires
-                      const { setActiveSuperOwnerVendor } = require('@/demo/superOwnerService');
                       setActiveSuperOwnerVendor(null);
                       window.location.href = '/app/super-owner-dashboard';
                     }}
