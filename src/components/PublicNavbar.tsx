@@ -175,12 +175,31 @@ export function PublicNavbar({ config, brandName = 'GymOS', brandLogo, navLinks,
             >
               {ctaText}
             </Button>
-            {showDashboard && (
+            {showDashboard && isAuthenticated && (
               <Link to="/app/dashboard" className="block">
-                <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim">
-                  Dashboard
+                <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim gap-2">
+                  <LayoutDashboard className="h-4 w-4" /> Dashboard
                 </Button>
               </Link>
+            )}
+            {isAuthenticated ? (
+              <Button variant="outline" onClick={handleLogout}
+                className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim gap-2">
+                <LogOut className="h-4 w-4" /> Logout
+              </Button>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link to="/login" className="block">
+                  <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label gap-2">
+                    <LogIn className="h-4 w-4" /> Login
+                  </Button>
+                </Link>
+                <Link to="/register" className="block">
+                  <Button className="w-full h-12 rounded-xl gap-2">
+                    <UserPlus className="h-4 w-4" /> Register
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
