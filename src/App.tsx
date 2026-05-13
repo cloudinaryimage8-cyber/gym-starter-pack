@@ -41,6 +41,12 @@ import TrainersPage from "./pages/TrainersPage";
 import TrainerDetailPage from "./pages/TrainerDetailPage";
 import SuperOwnerDashboardPage from "./pages/SuperOwnerDashboardPage";
 import SuperOwnersAdminPage from "./pages/SuperOwnersAdminPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import AccessRestrictedPage from "./pages/auth/AccessRestrictedPage";
+import { GymAuthProvider } from "./contexts/GymAuthContext";
+import { RequireAuth } from "./components/auth/RequireAuth";
 import { useEffect } from "react";
 import { runRecycleCleanup } from "./services/dataService";
 
