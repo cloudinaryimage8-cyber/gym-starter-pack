@@ -38,7 +38,10 @@ export function TopNavbar() {
   const isDemo = demo?.isDemo ?? false;
   const currentUser = demo?.currentUser ?? null;
   const vendor = demo?.vendor ?? null;
+  const auth = useGymAuth();
+  const navigate = useNavigate();
   const [confirmExit, setConfirmExit] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const handleLoadDemo = () => {
     const wasActive = isDemo;
@@ -59,7 +62,14 @@ export function TopNavbar() {
     toast.success('Exited demo mode');
   };
 
-  const initials = isDemo ? initialsOf(currentUser?.name) : 'RS';
+  const handleLogout = () => {
+    auth.logout();
+    setConfirmLogout(false);
+    toast.success('Signed out');
+    navigate('/');
+  };
+
+  const initials = initialsOf(currentUser?.name ?? auth.user?.name);
 
   return (
     <header className="h-14 border-b border-border flex items-center justify-between px-3 sm:px-4 bg-card gap-2">
