@@ -29,12 +29,16 @@ export function PublicNavbar({ config, brandName = 'GymOS', brandLogo, navLinks,
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated, logout } = useGymAuth();
+  const navigate = useNavigate();
 
   const logo = config?.logo_url || brandLogo;
   const name = config?.brand_name || brandName;
   const ctaText = config?.cta_text || 'Join Now';
   const ctaLink = config?.cta_link || 'lead-form';
   const showDashboard = config?.show_dashboard_link !== false;
+
+  const handleLogout = () => { logout(); navigate('/'); };
 
   useEffect(() => {
     setMounted(true);
