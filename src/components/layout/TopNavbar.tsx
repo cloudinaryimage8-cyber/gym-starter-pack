@@ -97,7 +97,6 @@ export function TopNavbar() {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {isDemo ? (
           <>
-            <RoleSwitcher />
             <Button
               variant="outline"
               size="sm"
@@ -114,7 +113,7 @@ export function TopNavbar() {
               onClick={() => setConfirmExit(true)}
               className="h-9 gap-1.5"
             >
-              <LogOut className="h-4 w-4" />
+              <Database className="h-4 w-4" />
               <span className="hidden sm:inline text-xs">Exit Demo</span>
             </Button>
           </>
@@ -129,6 +128,17 @@ export function TopNavbar() {
             <span className="hidden sm:inline text-xs">Load Demo Data</span>
           </Button>
         )}
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setConfirmLogout(true)}
+          className="h-9 gap-1.5"
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline text-xs">Logout</span>
+        </Button>
 
         <Button variant="ghost" size="icon" className="text-muted-foreground h-9 w-9">
           <Bell className="h-4 w-4" />
