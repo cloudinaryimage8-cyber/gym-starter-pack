@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bell, Home, Database, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
-import { RoleSwitcher } from '@/demo/RoleSwitcher';
+import { useGymAuth } from '@/contexts/GymAuthContext';
 
 function initialsOf(name?: string | null): string {
   if (!name) return 'RS';
