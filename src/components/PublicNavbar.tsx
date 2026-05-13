@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Menu, X } from 'lucide-react';
+import { Dumbbell, Menu, X, LogOut, LayoutDashboard, LogIn, UserPlus } from 'lucide-react';
+import { useGymAuth } from '@/contexts/GymAuthContext';
 
 export interface NavbarConfig {
   logo_url?: string;
